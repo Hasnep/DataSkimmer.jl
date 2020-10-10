@@ -1,0 +1,7 @@
+name = "DataSkimmer"
+uuid = "54a5dec1-bae8-447e-bd66-474f7865e6c6"
+authors = ["Hannes <hasnep@gmail.com> and contributors"]
+version = "0.1.0"
+
+[compat]
+julia = "1"
