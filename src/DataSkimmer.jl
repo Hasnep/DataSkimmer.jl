@@ -153,7 +153,8 @@ function Base.show(io::IO, skimmed::Skimmed)
         backend = :text,
         tf = borderless,
     )
-    # Numeric table
+
+    # Numeric
     if length(skimmed.numeric_columns) > 0
         numeric_table = StructArray(skimmed.numeric_columns)
         numeric_header = [
@@ -189,6 +190,7 @@ function Base.show(io::IO, skimmed::Skimmed)
     else
         println("No numeric columns")
     end
+
     # Categorical
     if length(skimmed.categorical_columns) > 0
         categorical_table = StructArray(skimmed.categorical_columns)
