@@ -219,7 +219,7 @@ function Base.show(io::IO, skimmed::Skimmed)
 end
 
 """Plots a histogram using unicode characters."""
-function unicode_histogram(x::Vector{T}, n_bins::Integer) where {T<:Real}
+function unicode_histogram(x::AbstractVector{T}, n_bins::Integer) where {T<:Real}
     data_min = minimum(x)
     bin_width = (maximum(x) - data_min) / n_bins
     bin_edges = [data_min + i * bin_width for i = 0:n_bins]
