@@ -179,6 +179,7 @@ function Base.show(io::IO, skimmed::Skimmed)
             ),
             formater_percent(numeric_table, :completion_rate),
         )
+        println(io, "")
         pretty_table(
             io,
             numeric_table,
@@ -205,6 +206,7 @@ function Base.show(io::IO, skimmed::Skimmed)
             ),
             formater_percent(categorical_table, :completion_rate),
         )
+        println(io, "")
         pretty_table(
             io,
             categorical_table,
