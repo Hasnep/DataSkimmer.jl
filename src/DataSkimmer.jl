@@ -142,13 +142,16 @@ end
 function Base.show(io::IO, skimmed::Skimmed)
     # TODO: Use displaysize(stdout)[2] to abbreviate column headers when the table is too wide
     # Summary
-    println("data")
     summary = skimmed.summary
     pretty_table(
         io,
-        Dict(field_name => getfield(summary, field_name) for field_name ∈ fieldnames(Summary));
+        Dict(
+            field_name => getfield(summary, field_name)
+            for field_name ∈ fieldnames(Summary)
+        );
+        # header = nothing,
         backend = :text,
-        # tf = borderless
+        tf = borderless,
     )
     # Numeric table
     if length(skimmed.numeric_columns) > 0
@@ -180,7 +183,7 @@ function Base.show(io::IO, skimmed::Skimmed)
             numeric_table,
             numeric_header;
             backend = :text,
-            # tf = borderless,
+            tf = borderless,
             formatters = numeric_formatters,
         )
     else
@@ -207,7 +210,7 @@ function Base.show(io::IO, skimmed::Skimmed)
             categorical_table,
             categorical_header;
             backend = :text,
-            # tf = borderless,
+            tf = borderless,
             formatters = categorical_formatters,
         )
     else
