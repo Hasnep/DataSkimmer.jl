@@ -149,7 +149,7 @@ function Base.show(io::IO, skimmed::Skimmed)
             field_name => getfield(summary, field_name)
             for field_name ∈ fieldnames(Summary)
         );
-        # header = nothing,
+        noheader = true,
         backend = :text,
         tf = borderless,
     )
