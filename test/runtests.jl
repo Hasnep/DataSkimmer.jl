@@ -16,7 +16,7 @@ datasets = Dict(
 )
 @testset "DataSkimmer.jl" begin
     @testset "unicode_histogram" begin
-        @testset "unicode_histogram draws $n_bars bar(s)" for n_bars = [1,2,5,10]
+        @testset "unicode_histogram draws $n_bars bar(s)" for n_bars in [1, 2, 5, 10]
             @test DataSkimmer.unicode_histogram(-100:100, n_bars) isa String
             @test length(DataSkimmer.unicode_histogram(-100:100, n_bars)) == n_bars
         end
