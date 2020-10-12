@@ -140,6 +140,7 @@ function formater_percent(data, percent_name)
 end
 
 function Base.show(io::IO, skimmed::Skimmed)
+    # TODO: Use displaysize(stdout)[2] to abbreviate column headers when the table is too wide
     # Summary
     println("data")
     summary = skimmed.summary
@@ -149,12 +150,6 @@ function Base.show(io::IO, skimmed::Skimmed)
         backend = :text,
         # tf = borderless
     )
-
-    # println(io, "n_rows: $(skimmed.summary.n_rows)")
-    # println(io, "n_columns: $(skimmed.summary.n_columns)")
-    # println(io, "n_numeric: $(skimmed.summary.n_numeric)")
-    # println(io, "n_categorical: $(skimmed.summary.n_categorical)")
-    # TODO: Use displaysize(stdout)[2] to abbreviate column headers when the table is too wide
     # Numeric table
     if length(skimmed.numeric_columns) > 0
         numeric_table = StructArray(skimmed.numeric_columns)
