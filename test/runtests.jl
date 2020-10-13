@@ -1,9 +1,10 @@
-using CSV
+import CSV
+import Random
+using DataFrames
 using DataSkimmer
 using RDatasets: dataset
-using Test
-using DataFrames
 using StructArrays
+using Test
 
 iris_dataframe = dataset("datasets", "iris")
 iris_csv = CSV.File(joinpath("data", "iris.csv"))
@@ -16,9 +17,16 @@ datasets = Dict(
 )
 @testset "DataSkimmer.jl" begin
     @testset "unicode_histogram" begin
-        @testset "unicode_histogram draws $n_bars bars" for n_bars = 1:10
-            @test DataSkimmer.unicode_histogram(iris.SepalLength, n_bars) isa String
-            @test length(DataSkimmer.unicode_histogram(iris.SepalLength, n_bars)) == n_bars
+        @testset "unicode_histogram draws $n_bars bar(s)" for n_bars in [1, 2, 5, 10]
+            output = DataSkimmer.unicode_histogram(-100:100, n_bars)
+            @test output isa String
+            @test length(output) == n_bars
+        end
+        @testset "unicode_histogram draws bars for $p% missing" for p in [0, 10, 50, 100]
+            input = Random.shuffle(vcat(repeat([missing], p), 1:p))
+            output = DataSkimmer.unicode_histogram(input, 5)
+            @test output isa String
+            @test length(output) == 5
         end
     end
     @testset "$ds_name" for (ds_name, dataset) in datasets

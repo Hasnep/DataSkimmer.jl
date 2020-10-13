@@ -140,22 +140,21 @@ function formater_percent(data, percent_name)
 end
 
 function Base.show(io::IO, skimmed::Skimmed)
+    # TODO: Use displaysize(stdout)[2] to abbreviate column headers when the table is too wide
     # Summary
-    println("data")
     summary = skimmed.summary
     pretty_table(
         io,
-        Dict(field_name => getfield(summary, field_name) for field_name ∈ fieldnames(Summary));
+        Dict(
+            field_name => getfield(summary, field_name)
+            for field_name ∈ fieldnames(Summary)
+        );
+        noheader = true,
         backend = :text,
-        # tf = borderless
+        tf = borderless,
     )
 
-    # println(io, "n_rows: $(skimmed.summary.n_rows)")
-    # println(io, "n_columns: $(skimmed.summary.n_columns)")
-    # println(io, "n_numeric: $(skimmed.summary.n_numeric)")
-    # println(io, "n_categorical: $(skimmed.summary.n_categorical)")
-    # TODO: Use displaysize(stdout)[2] to abbreviate column headers when the table is too wide
-    # Numeric table
+    # Numeric
     if length(skimmed.numeric_columns) > 0
         numeric_table = StructArray(skimmed.numeric_columns)
         numeric_header = [
@@ -179,17 +178,19 @@ function Base.show(io::IO, skimmed::Skimmed)
             ),
             formater_percent(numeric_table, :completion_rate),
         )
+        println(io, "")
         pretty_table(
             io,
             numeric_table,
             numeric_header;
             backend = :text,
-            # tf = borderless,
+            tf = borderless,
             formatters = numeric_formatters,
         )
     else
         println("No numeric columns")
     end
+
     # Categorical
     if length(skimmed.categorical_columns) > 0
         categorical_table = StructArray(skimmed.categorical_columns)
@@ -205,12 +206,13 @@ function Base.show(io::IO, skimmed::Skimmed)
             ),
             formater_percent(categorical_table, :completion_rate),
         )
+        println(io, "")
         pretty_table(
             io,
             categorical_table,
             categorical_header;
             backend = :text,
-            # tf = borderless,
+            tf = borderless,
             formatters = categorical_formatters,
         )
     else
@@ -219,7 +221,7 @@ function Base.show(io::IO, skimmed::Skimmed)
 end
 
 """Plots a histogram using unicode characters."""
-function unicode_histogram(x::Vector{T}, n_bins::Integer) where {T<:Real}
+function unicode_histogram(x::AbstractVector{T}, n_bins::Integer) where {T<:Real}
     data_min = minimum(x)
     bin_width = (maximum(x) - data_min) / n_bins
     bin_edges = [data_min + i * bin_width for i = 0:n_bins]
