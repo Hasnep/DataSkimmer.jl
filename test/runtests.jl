@@ -40,7 +40,7 @@ datasets = Dict(
         end
         @testset "skim($ds_name)" begin
             @test skim(dataset) isa DataSkimmer.Skimmed
-            println(skim(dataset))
+            @test string(skim(dataset)) isa String
         end
     end
 end
