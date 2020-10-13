@@ -215,7 +215,7 @@ function Base.show(io::IO, skimmed::Skimmed)
             formatters = categorical_formatters,
         )
     else
-        println("No categorical columns")
+        println(io, "No categorical columns")
     end
 end
 
