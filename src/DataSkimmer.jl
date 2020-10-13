@@ -1,7 +1,6 @@
 module DataSkimmer
 
 import Tables
-using StatsBase: Histogram, fit
 using Statistics: mean, std, median
 using PrettyTables: pretty_table, borderless, ft_round
 using StructArrays
