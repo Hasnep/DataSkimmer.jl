@@ -105,8 +105,7 @@ function skim(data)::Skimmed
     end
 
     # Categorical columns
-    categorical_column_names =
-        filter(n -> !(Tables.columntype(data, n) <: Real), column_names)
+    categorical_column_names = filter(n -> !(Tables.columntype(data, n) <: Real), column_names)
     categorical_columns = []
     for column_name in categorical_column_names
         n_missing = get_n_missing(data, column_name)
@@ -134,8 +133,7 @@ end
 
 function formater_percent(data, percent_name)
     return (v, i, j) -> begin
-        findfirst(n -> n == percent_name, Tables.columnnames(data)) == j ?
-            "$(100 * v)%" : v
+        findfirst(n -> n == percent_name, Tables.columnnames(data)) == j ? "$(100 * v)%" : v
     end
 end
 
@@ -145,10 +143,7 @@ function Base.show(io::IO, skimmed::Skimmed)
     summary = skimmed.summary
     pretty_table(
         io,
-        Dict(
-            field_name => getfield(summary, field_name)
-            for field_name ∈ fieldnames(Summary)
-        );
+        Dict(field_name => getfield(summary, field_name) for field_name in fieldnames(Summary));
         noheader = true,
         backend = :text,
         tf = borderless,
@@ -157,25 +152,10 @@ function Base.show(io::IO, skimmed::Skimmed)
     # Numeric
     if length(skimmed.numeric_columns) > 0
         numeric_table = StructArray(skimmed.numeric_columns)
-        numeric_header = [
-            "Name",
-            "Type",
-            "Missings",
-            "Complete",
-            "Mean",
-            "Std.",
-            "Min.",
-            "Med.",
-            "Max.",
-            "Hist.",
-        ]
-        numeric_rounded =
-            [:completion_rate, :mean, :standard_deviation, :minimum, :median, :maximum]
+        numeric_header = ["Name", "Type", "Missings", "Complete", "Mean", "Std.", "Min.", "Med.", "Max.", "Hist."]
+        numeric_rounded = [:completion_rate, :mean, :standard_deviation, :minimum, :median, :maximum]
         numeric_formatters = (
-            ft_round(
-                2,
-                findall(n -> n in numeric_rounded, Tables.columnnames(numeric_table)),
-            ),
+            ft_round(2, findall(n -> n in numeric_rounded, Tables.columnnames(numeric_table))),
             formater_percent(numeric_table, :completion_rate),
         )
         println(io, "")
@@ -197,13 +177,7 @@ function Base.show(io::IO, skimmed::Skimmed)
         categorical_header = ["Name", "Type", "Missings", "Complete"]
         categorical_rounded = [:completion_rate]
         categorical_formatters = (
-            ft_round(
-                2,
-                findall(
-                    n -> n in categorical_rounded,
-                    Tables.columnnames(categorical_table),
-                ),
-            ),
+            ft_round(2, findall(n -> n in categorical_rounded, Tables.columnnames(categorical_table))),
             formater_percent(categorical_table, :completion_rate),
         )
         println(io, "")
