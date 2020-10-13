@@ -187,7 +187,7 @@ function Base.show(io::IO, skimmed::Skimmed)
             formatters = numeric_formatters,
         )
     else
-        println("No numeric columns")
+        println(io, "No numeric columns")
     end
 
     # Categorical
