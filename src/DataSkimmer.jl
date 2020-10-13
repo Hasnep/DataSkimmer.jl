@@ -4,6 +4,7 @@ import Tables
 using Statistics: mean, std, median
 using PrettyTables: pretty_table, borderless, ft_round
 using StructArrays
+using IterTools: partition
 
 export skim
 
@@ -220,13 +221,23 @@ function Base.show(io::IO, skimmed::Skimmed)
 end
 
 """Plots a histogram using unicode characters."""
-function unicode_histogram(x::AbstractVector{T}, n_bins::Integer) where {T<:Real}
-    data_min = minimum(x)
-    bin_width = (maximum(x) - data_min) / n_bins
-    bin_edges = [data_min + i * bin_width for i = 0:n_bins]
-    weights = [length(x[bin_edges[i].<x.<=bin_edges[i+1]]) for i = 1:n_bins] ./ length(x)
-    output = [b == 0 ? ' ' : Char(0x2581 + floor(Int, b * 8)) for b in weights]
-    return join(output, "")
+function unicode_histogram(x, n_bins)
+    n_nonmissing_datapoints = count(!ismissing, x)
+    if n_nonmissing_datapoints == 0
+        return repeat(" ", n_bins)
+    else
+        x = skipmissing(x)
+        min_value = minimum(x)
+        max_value = maximum(x)
+        bin_edges = range(min_value, length = n_bins + 1, stop = max_value)
+        weights =
+            [
+                count(datapoint -> edge_lower < datapoint <= edge_upper, x)
+                for (edge_lower, edge_upper) in partition(bin_edges, 2, 1)
+            ] ./ n_nonmissing_datapoints
+        bars = [w == 0 ? ' ' : Char(0x2581 + floor(Int, w * 8)) for w in weights]
+        return join(bars, "")
+    end
 end
 
 end
