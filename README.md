@@ -1,7 +1,7 @@
 # DataSkimmer.jl
 
 A Julia package that gives a summary of a tabular dataset in the REPL.
-Based on the [skimr](https://cran.r-project.org/web/packages/skimr/index.html) R package.
+Based on the [skimr](https://docs.ropensci.org/skimr/) R package.
 
 ## Installation
 
