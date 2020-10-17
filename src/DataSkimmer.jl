@@ -67,7 +67,6 @@ function skim(data)::Skimmed
 
     # Numeric columns
     numeric_column_names = filter(n -> (Tables.columntype(data, n) <: Real), column_names)
-
     numeric_columns =
         map(
             column_name -> begin
