@@ -66,6 +66,11 @@ end
 
 get_n_missing(data, column_name) = count(ismissing, Tables.getcolumn(data, column_name))
 
+"""
+    function skim(data)::Skimmed
+
+Skim a table.
+"""
 function skim(data)::Skimmed
     @assert Tables.istable(data) "Input must be a table"
 
