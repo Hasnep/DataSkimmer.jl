@@ -44,8 +44,6 @@ struct Skimmed
     categorical_columns::Vector{CategoricalColumn}
 end
 
-get_n_missing(data, column_name) = count(ismissing, Tables.getcolumn(data, column_name))
-
 """
     function skim(data)::Skimmed
 
@@ -69,41 +67,42 @@ function skim(data)::Skimmed
 
     # Numeric columns
     numeric_column_names = filter(n -> (Tables.columntype(data, n) <: Real), column_names)
-    numeric_columns = []
-    for column_name in numeric_column_names
-        n_missing::Real = get_n_missing(data, column_name)
-        push!(
-            numeric_columns,
-            NumericColumn(
-                name = column_name,
-                type = Tables.columntype(data, column_name),
-                n_missing = n_missing,
-                completion_rate = 1 - (n_missing / n_rows),
-                mean = mean(Tables.getcolumn(data, column_name)),
-                standard_deviation = std(Tables.getcolumn(data, column_name)),
-                minimum = minimum(Tables.getcolumn(data, column_name)),
-                median = median(Tables.getcolumn(data, column_name)),
-                maximum = maximum(Tables.getcolumn(data, column_name)),
-                histogram = unicode_histogram(Tables.getcolumn(data, column_name), 5),
-            ),
-        )
-    end
+
+    numeric_columns =
+        map(
+            column_name -> begin
+                n_missing = count(ismissing, Tables.getcolumn(data, column_name))
+                return NumericColumn(
+                    name = column_name,
+                    type = Tables.columntype(data, column_name),
+                    n_missing = n_missing,
+                    completion_rate = 1 - (n_missing / n_rows),
+                    mean = mean(Tables.getcolumn(data, column_name)),
+                    standard_deviation = std(Tables.getcolumn(data, column_name)),
+                    minimum = minimum(Tables.getcolumn(data, column_name)),
+                    median = median(Tables.getcolumn(data, column_name)),
+                    maximum = maximum(Tables.getcolumn(data, column_name)),
+                    histogram = unicode_histogram(Tables.getcolumn(data, column_name), 5),
+                )
+            end,
+            numeric_column_names,
+        ) |> collect
 
     # Categorical columns
     categorical_column_names = filter(n -> !(Tables.columntype(data, n) <: Real), column_names)
-    categorical_columns = []
-    for column_name in categorical_column_names
-        n_missing = get_n_missing(data, column_name)
-        push!(
-            categorical_columns,
-            CategoricalColumn(
-                name = column_name,
-                type = Tables.columntype(data, column_name),
-                n_missing = n_missing,
-                completion_rate = 1 - (n_missing / n_rows),
-            ),
-        )
-    end
+    categorical_columns =
+        map(
+            column_name -> begin
+                n_missing = count(ismissing, Tables.getcolumn(data, column_name))
+                return CategoricalColumn(
+                    name = column_name,
+                    type = Tables.columntype(data, column_name),
+                    n_missing = n_missing,
+                    completion_rate = 1 - (n_missing / n_rows),
+                )
+            end,
+            categorical_column_names,
+        ) |> collect
 
     # Summary
     summary = Summary(
