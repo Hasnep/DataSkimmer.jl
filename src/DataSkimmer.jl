@@ -116,7 +116,7 @@ function skim(data)::Skimmed
     return Skimmed(summary, numeric_columns, categorical_columns)
 end
 
-function formater_percent(data, percent_name)
+function formatter_percent(data, percent_name)
     return (v, i, j) -> begin
         findfirst(n -> n == percent_name, Tables.columnnames(data)) == j ? "$(100 * v)%" : v
     end
@@ -141,7 +141,7 @@ function Base.show(io::IO, skimmed::Skimmed)
         numeric_rounded = [:completion_rate, :mean, :standard_deviation, :minimum, :median, :maximum]
         numeric_formatters = (
             ft_round(2, findall(n -> n in numeric_rounded, Tables.columnnames(numeric_table))),
-            formater_percent(numeric_table, :completion_rate),
+            formatter_percent(numeric_table, :completion_rate),
         )
         println(io, "")
         pretty_table(
@@ -163,7 +163,7 @@ function Base.show(io::IO, skimmed::Skimmed)
         categorical_rounded = [:completion_rate]
         categorical_formatters = (
             ft_round(2, findall(n -> n in categorical_rounded, Tables.columnnames(categorical_table))),
-            formater_percent(categorical_table, :completion_rate),
+            formatter_percent(categorical_table, :completion_rate),
         )
         println(io, "")
         pretty_table(
