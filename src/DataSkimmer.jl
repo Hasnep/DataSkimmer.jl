@@ -175,5 +175,4 @@ function Base.show(io::IO, skimmed::Skimmed)
     end
 end
 
-
 end
