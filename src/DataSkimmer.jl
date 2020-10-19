@@ -47,7 +47,7 @@ end
 """
     function skim(data)::Skimmed
 
-Skim a table.
+Skim any Tables.jl compatible table.
 """
 function skim(data)::Skimmed
     @assert Tables.istable(data) "Input must be a table"
