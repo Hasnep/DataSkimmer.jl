@@ -8,7 +8,7 @@ using IterTools: partition
 import Dates
 
 include("helpers.jl")
-
+include("histogram.jl")
 
 export skim
 
