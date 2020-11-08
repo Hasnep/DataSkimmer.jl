@@ -45,8 +45,8 @@ Base.@kwdef struct DateTimeColumn
     type::DataType
     n_missing::Integer
     completion_rate::Real
-    minimum::Real
-    maximum::Real
+    minimum::Union{Dates.Date, Dates.DateTime}
+    maximum::Union{Dates.Date, Dates.DateTime}
     histogram::String
 end
 
