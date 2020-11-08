@@ -32,18 +32,18 @@ datasets = Dict(
             @test length(output) == 5
         end
     end
-    @testset "Test dataset '$ds_name'" for (ds_name, dataset) in datasets
+    @testset "Test dataset '$ds_name'" for (ds_name, data) in datasets
         @testset "Test summary functions" begin
             @testset "Test count_rows($ds_name) counts the number of rows" begin
-                @test DataSkimmer.count_rows(dataset) isa Integer
+                @test DataSkimmer.count_rows(data) isa Integer
             end
             @testset "Test count_columns($ds_name) counts the number of columns" begin
-                @test DataSkimmer.count_columns(dataset) isa Integer
+                @test DataSkimmer.count_columns(data) isa Integer
             end
         end
         @testset "Test skim($ds_name) produces output" begin
-            @test skim(dataset) isa DataSkimmer.Skimmed
-            @test string(skim(dataset)) isa String
+            @test skim(data) isa DataSkimmer.Skimmed
+            @test string(skim(data)) isa String
         end
     end
     include("test_formatting.jl")
