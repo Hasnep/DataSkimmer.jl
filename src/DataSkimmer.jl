@@ -229,8 +229,4 @@ function Base.show(io::IO, skimmed::Skimmed)
     end
 end
 
-function is_datetime(x::DataType)::Bool
-    return x == Dates.Date || x == Dates.DateTime
-end
-
 end
