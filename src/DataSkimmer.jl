@@ -79,6 +79,7 @@ function skim(data)::Skimmed
     end
 
     # Numeric columns
+    numeric_column_names = filter(n -> Tables.columntype(data, n) <: Real, column_names)
     numeric_columns =
         map(
             column_name -> begin
@@ -96,10 +97,11 @@ function skim(data)::Skimmed
                     histogram = unicode_histogram(Tables.getcolumn(data, column_name), 5),
                 )
             end,
-            filter(n -> Tables.columntype(data, n) <: Real, column_names),
+            numeric_column_names,
         ) |> collect
 
     # Categorical columns
+    categorical_column_names = filter(n -> is_categorical(Tables.columntype(data, n)), column_names)
     categorical_columns =
         map(
             column_name -> begin
@@ -111,13 +113,11 @@ function skim(data)::Skimmed
                     completion_rate = 1 - (n_missing / n_rows),
                 )
             end,
-            filter(
-                n -> !(Tables.columntype(data, n) <: Real || Tables.columntype(data, n) |> is_datetime),
-                column_names,
-            ),
+            categorical_column_names,
         ) |> collect
 
     # Datetime columns
+    datetime_column_names = filter(n -> is_datetime(Tables.columntype(data, n)), column_names)
     datetime_columns =
         map(
             column_name -> begin
@@ -132,7 +132,7 @@ function skim(data)::Skimmed
                     histogram = unicode_histogram(Tables.getcolumn(data, column_name), 5),
                 )
             end,
-            filter(n -> Tables.columntype(data, n) |> is_datetime, column_names),
+            datetime_column_names,
         ) |> collect
 
     # Summary

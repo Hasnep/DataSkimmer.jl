@@ -20,3 +20,7 @@ function count_columns(data)::Integer
         return length(data_schema.names)
     end
 end
+
+is_datetime(x::DataType)::Bool = x == Dates.Date || x == Dates.DateTime
+
+is_categorical(x::DataType)::Bool = !(x <: Real || is_datetime(x))
