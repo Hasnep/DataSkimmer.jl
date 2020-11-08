@@ -5,17 +5,19 @@ using Statistics: mean, std, median
 using PrettyTables: pretty_table, borderless, ft_round
 using StructArrays
 using IterTools: partition
+import Dates
 
 include("helpers.jl")
-
+include("histogram.jl")
 
 export skim
 
-Base.@kwdef struct Summary
+struct Summary
     n_rows::Integer
     n_columns::Integer
     n_numeric::Integer
     n_categorical::Integer
+    n_datetime::Integer
 end
 
 Base.@kwdef struct NumericColumn
@@ -38,10 +40,21 @@ Base.@kwdef struct CategoricalColumn
     completion_rate::Real
 end
 
+Base.@kwdef struct DateTimeColumn
+    name::Symbol
+    type::DataType
+    n_missing::Integer
+    completion_rate::Real
+    minimum::Union{Dates.Date, Dates.DateTime}
+    maximum::Union{Dates.Date, Dates.DateTime}
+    histogram::String
+end
+
 struct Skimmed
     summary::Summary
     numeric_columns::Vector{NumericColumn}
     categorical_columns::Vector{CategoricalColumn}
+    datetime_columns::Vector{DateTimeColumn}
 end
 
 """
@@ -66,6 +79,7 @@ function skim(data)::Skimmed
     end
 
     # Numeric columns
+    numeric_column_names = filter(n -> Tables.columntype(data, n) <: Real, column_names)
     numeric_columns =
         map(
             column_name -> begin
@@ -83,10 +97,11 @@ function skim(data)::Skimmed
                     histogram = unicode_histogram(Tables.getcolumn(data, column_name), 5),
                 )
             end,
-            filter(n -> (Tables.columntype(data, n) <: Real), column_names),
+            numeric_column_names,
         ) |> collect
 
     # Categorical columns
+    categorical_column_names = filter(n -> is_categorical(Tables.columntype(data, n)), column_names)
     categorical_columns =
         map(
             column_name -> begin
@@ -98,18 +113,32 @@ function skim(data)::Skimmed
                     completion_rate = 1 - (n_missing / n_rows),
                 )
             end,
-            filter(n -> !(Tables.columntype(data, n) <: Real), column_names),
+            categorical_column_names,
+        ) |> collect
+
+    # Datetime columns
+    datetime_column_names = filter(n -> is_datetime(Tables.columntype(data, n)), column_names)
+    datetime_columns =
+        map(
+            column_name -> begin
+                n_missing = count(ismissing, Tables.getcolumn(data, column_name))
+                return DateTimeColumn(
+                    name = column_name,
+                    type = Tables.columntype(data, column_name),
+                    n_missing = n_missing,
+                    completion_rate = 1 - (n_missing / n_rows),
+                    minimum = minimum(Tables.getcolumn(data, column_name)),
+                    maximum = maximum(Tables.getcolumn(data, column_name)),
+                    histogram = unicode_histogram(Tables.getcolumn(data, column_name), 5),
+                )
+            end,
+            datetime_column_names,
         ) |> collect
 
     # Summary
-    summary = Summary(
-        n_rows = n_rows,
-        n_columns = n_columns,
-        n_numeric = length(numeric_columns),
-        n_categorical = length(categorical_columns),
-    )
+    summary = Summary(n_rows, n_columns, length(numeric_columns), length(categorical_columns), length(datetime_columns))
 
-    return Skimmed(summary, numeric_columns, categorical_columns)
+    return Skimmed(summary, numeric_columns, categorical_columns, datetime_columns)
 end
 
 function formatter_percent(data, percent_name)
@@ -130,6 +159,7 @@ function Base.show(io::IO, skimmed::Skimmed)
         tf = borderless,
     )
 
+    println(io, "")
     # Numeric
     if length(skimmed.numeric_columns) > 0
         numeric_table = StructArray(skimmed.numeric_columns)
@@ -139,7 +169,7 @@ function Base.show(io::IO, skimmed::Skimmed)
             ft_round(2, findall(n -> n in numeric_rounded, Tables.columnnames(numeric_table))),
             formatter_percent(numeric_table, :completion_rate),
         )
-        println(io, "")
+        println(io, "Numeric columns")
         pretty_table(
             io,
             numeric_table,
@@ -153,6 +183,7 @@ function Base.show(io::IO, skimmed::Skimmed)
     end
 
     # Categorical
+    println(io, "")
     if length(skimmed.categorical_columns) > 0
         categorical_table = StructArray(skimmed.categorical_columns)
         categorical_header = ["Name", "Type", "Missings", "Complete"]
@@ -161,7 +192,7 @@ function Base.show(io::IO, skimmed::Skimmed)
             ft_round(2, findall(n -> n in categorical_rounded, Tables.columnnames(categorical_table))),
             formatter_percent(categorical_table, :completion_rate),
         )
-        println(io, "")
+        println(io, "Categorical columns")
         pretty_table(
             io,
             categorical_table,
@@ -172,6 +203,29 @@ function Base.show(io::IO, skimmed::Skimmed)
         )
     else
         println(io, "No categorical columns")
+    end
+
+    # Datetime
+    println(io, "")
+    if length(skimmed.datetime_columns) > 0
+        datetime_table = StructArray(skimmed.datetime_columns)
+        datetime_header = ["Name", "Type", "Missings", "Complete", "Min", "Max", "Hist."]
+        datetime_rounded = [:completion_rate]
+        datetime_formatters = (
+            ft_round(2, findall(n -> n in datetime_rounded, Tables.columnnames(datetime_table))),
+            formatter_percent(datetime_table, :completion_rate),
+        )
+        println(io, "Datetime columns")
+        pretty_table(
+            io,
+            datetime_table,
+            datetime_header;
+            backend = :text,
+            tf = borderless,
+            formatters = datetime_formatters,
+        )
+    else
+        println(io, "No datetime columns")
     end
 end
 

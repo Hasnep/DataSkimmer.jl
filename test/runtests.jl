@@ -1,15 +1,22 @@
 import CSV
 import Random
+import RDatasets
 using DataFrames
 using DataSkimmer
-using RDatasets: dataset
-using StructArrays
+using StructArrays: StructArray
 using Test
+using TimeSeries: TimeArray
 
-iris_dataframe = dataset("datasets", "iris")
+iris_dataframe = RDatasets.dataset("datasets", "iris")
 iris_csv = CSV.File(joinpath("data", "iris.csv"))
 data_structarray = StructArray([(A = 1, B = 2, C = 3), (A = 4, B = 5, C = 6), (A = 7, B = 8, C = 9)])
-datasets = Dict("iris dataframe" => iris_dataframe, "iris csv" => iris_csv, "structarray" => data_structarray)
+timearray = TimeArray(RDatasets.dataset("ggplot2", "economics"), timestamp = :Date)
+datasets = Dict(
+    "iris_dataframe" => iris_dataframe,
+    "iris_csv" => iris_csv,
+    "structarray" => data_structarray,
+    "timearray" => timearray,
+)
 
 @testset "Test DataSkimmer.jl" begin
     @testset "Test unicode_histogram" begin
