@@ -209,7 +209,7 @@ function Base.show(io::IO, skimmed::Skimmed)
     println(io, "")
     if length(skimmed.datetime_columns) > 0
         datetime_table = StructArray(skimmed.datetime_columns)
-        datetime_header = ["Name", "Type", "Missings", "Complete"]
+        datetime_header = ["Name", "Type", "Missings", "Complete", "Min", "Max", "Hist."]
         datetime_rounded = [:completion_rate]
         datetime_formatters = (
             ft_round(2, findall(n -> n in datetime_rounded, Tables.columnnames(datetime_table))),
