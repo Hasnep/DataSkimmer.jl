@@ -8,7 +8,7 @@ using Test
 using TimeSeries: TimeArray
 
 iris_dataframe = RDatasets.dataset("datasets", "iris")
-iris_csv = CSV.File(joinpath("data", "iris.csv"))
+iris_csv = CSV.File(seekstart(CSV.write(IOBuffer(), iris_dataframe)))
 data_structarray = StructArray([(A = 1, B = 2, C = 3), (A = 4, B = 5, C = 6), (A = 7, B = 8, C = 9)])
 timearray = TimeArray(RDatasets.dataset("ggplot2", "economics"), timestamp = :Date)
 datasets = Dict(
