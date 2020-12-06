@@ -2,7 +2,7 @@ module DataSkimmer
 
 import Tables
 using Statistics: mean, std, median
-using PrettyTables: pretty_table, borderless, ft_round
+using PrettyTables: pretty_table, tf_borderless, ft_round
 using StructArrays
 using IterTools: partition
 import Dates
@@ -156,7 +156,7 @@ function Base.show(io::IO, skimmed::Skimmed)
         Dict(field_name => getfield(summary, field_name) for field_name in fieldnames(Summary));
         noheader = true,
         backend = :text,
-        tf = borderless,
+        tf = tf_borderless,
     )
 
     println(io, "")
@@ -175,7 +175,7 @@ function Base.show(io::IO, skimmed::Skimmed)
             numeric_table,
             numeric_header;
             backend = :text,
-            tf = borderless,
+            tf = tf_borderless,
             formatters = numeric_formatters,
         )
     else
@@ -198,7 +198,7 @@ function Base.show(io::IO, skimmed::Skimmed)
             categorical_table,
             categorical_header;
             backend = :text,
-            tf = borderless,
+            tf = tf_borderless,
             formatters = categorical_formatters,
         )
     else
@@ -221,7 +221,7 @@ function Base.show(io::IO, skimmed::Skimmed)
             datetime_table,
             datetime_header;
             backend = :text,
-            tf = borderless,
+            tf = tf_borderless,
             formatters = datetime_formatters,
         )
     else
