@@ -8,14 +8,14 @@ Based on the [skimr](https://docs.ropensci.org/skimr/) R package.
 From the Julia REPL, type `]` to enter the Pkg REPL:
 
 ```text
-add https://github.com/JuliaData/DataFrames.jl
+add https://github.com/Hasnep/DataSkimmer.jl
 ```
 
 Or run from the Julia REPL:
 
 ```julia
 import Pkg
-Pkg.add("https://github.com/JuliaData/DataFrames.jl")
+Pkg.add(url="https://github.com/Hasnep/DataSkimmer.jl")
 ```
 
 ## Example
