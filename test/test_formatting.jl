@@ -11,8 +11,14 @@ using Test
             file_string,
             margin = 120,
             always_for_in = true,
-            whitespace_typedefs = true,
+            always_use_return = true,
+            annotate_untyped_fields_with_any = true,
+            conditional_to_if = true,
+            format_docstrings = true,
+            remove_extra_newlines = true,
+            whitespace_in_kwargs = true,
             whitespace_ops_in_indices = true,
+            whitespace_typedefs = true,
         )
         @test file_string == file_string_formatted
     end
