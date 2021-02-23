@@ -1,4 +1,6 @@
-"""Count the number of rows of a table."""
+"""
+Count the number of rows of a table.
+"""
 function count_rows(data)::Integer
     if Tables.rowaccess(data)
         return length(Tables.rows(data))
@@ -7,7 +9,9 @@ function count_rows(data)::Integer
     end
 end
 
-"""Count the number of columns of a table."""
+"""
+Count the number of columns of a table.
+"""
 function count_columns(data)::Integer
     data_schema = Tables.schema(data)
     if isnothing(data_schema)
