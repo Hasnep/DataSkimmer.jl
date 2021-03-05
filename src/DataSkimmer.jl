@@ -22,7 +22,7 @@ end
 
 Base.@kwdef struct NumericColumn
     name::Symbol
-    type::DataType
+    type::Type
     n_missing::Integer
     completion_rate::Real
     mean::Real
@@ -35,14 +35,14 @@ end
 
 Base.@kwdef struct CategoricalColumn
     name::Symbol
-    type::DataType
+    type::Type
     n_missing::Integer
     completion_rate::Real
 end
 
 Base.@kwdef struct DateTimeColumn
     name::Symbol
-    type::DataType
+    type::Type
     n_missing::Integer
     completion_rate::Real
     minimum::Union{Dates.Date, Dates.DateTime}
