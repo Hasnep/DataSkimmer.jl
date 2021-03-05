@@ -16,7 +16,6 @@ jobs:
           - nightly
         julia-arch:
           - x64
-          - x86
         os:
           - ubuntu-latest
 
