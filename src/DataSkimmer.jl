@@ -101,7 +101,8 @@ function skim(data)::Skimmed
         ) |> collect
 
     # Categorical columns
-    categorical_column_names = filter(n -> is_categorical(Tables.columntype(data, n)), column_names)
+    categorical_column_names =
+        filter(n -> is_categorical(Tables.columntype(data, n)), column_names)
     categorical_columns =
         map(
             column_name -> begin
@@ -117,7 +118,8 @@ function skim(data)::Skimmed
         ) |> collect
 
     # Datetime columns
-    datetime_column_names = filter(n -> is_datetime(Tables.columntype(data, n)), column_names)
+    datetime_column_names =
+        filter(n -> is_datetime(Tables.columntype(data, n)), column_names)
     datetime_columns =
         map(
             column_name -> begin
@@ -136,14 +138,24 @@ function skim(data)::Skimmed
         ) |> collect
 
     # Summary
-    summary = Summary(n_rows, n_columns, length(numeric_columns), length(categorical_columns), length(datetime_columns))
+    summary = Summary(
+        n_rows,
+        n_columns,
+        length(numeric_columns),
+        length(categorical_columns),
+        length(datetime_columns),
+    )
 
     return Skimmed(summary, numeric_columns, categorical_columns, datetime_columns)
 end
 
 function formatter_percent(data, percent_name)
     return (v, i, j) -> begin
-        findfirst(n -> n == percent_name, Tables.columnnames(data)) == j ? "$(100 * v)%" : v
+        if findfirst(n -> n == percent_name, Tables.columnnames(data)) == j
+            "$(100 * v)%"
+        else
+            v
+        end
     end
 end
 
@@ -153,7 +165,10 @@ function Base.show(io::IO, skimmed::Skimmed)
     summary = skimmed.summary
     pretty_table(
         io,
-        Dict(field_name => getfield(summary, field_name) for field_name in fieldnames(Summary));
+        Dict(
+            field_name => getfield(summary, field_name) for
+            field_name in fieldnames(Summary)
+        );
         noheader = true,
         backend = :text,
         tf = tf_borderless,
@@ -163,10 +178,25 @@ function Base.show(io::IO, skimmed::Skimmed)
     # Numeric
     if length(skimmed.numeric_columns) > 0
         numeric_table = StructArray(skimmed.numeric_columns)
-        numeric_header = ["Name", "Type", "Missings", "Complete", "Mean", "Std.", "Min.", "Med.", "Max.", "Hist."]
-        numeric_rounded = [:completion_rate, :mean, :standard_deviation, :minimum, :median, :maximum]
+        numeric_header = [
+            "Name",
+            "Type",
+            "Missings",
+            "Complete",
+            "Mean",
+            "Std.",
+            "Min.",
+            "Med.",
+            "Max.",
+            "Hist.",
+        ]
+        numeric_rounded =
+            [:completion_rate, :mean, :standard_deviation, :minimum, :median, :maximum]
         numeric_formatters = (
-            ft_round(2, findall(n -> n in numeric_rounded, Tables.columnnames(numeric_table))),
+            ft_round(
+                2,
+                findall(n -> n in numeric_rounded, Tables.columnnames(numeric_table)),
+            ),
             formatter_percent(numeric_table, :completion_rate),
         )
         println(io, "Numeric columns")
@@ -189,7 +219,13 @@ function Base.show(io::IO, skimmed::Skimmed)
         categorical_header = ["Name", "Type", "Missings", "Complete"]
         categorical_rounded = [:completion_rate]
         categorical_formatters = (
-            ft_round(2, findall(n -> n in categorical_rounded, Tables.columnnames(categorical_table))),
+            ft_round(
+                2,
+                findall(
+                    n -> n in categorical_rounded,
+                    Tables.columnnames(categorical_table),
+                ),
+            ),
             formatter_percent(categorical_table, :completion_rate),
         )
         println(io, "Categorical columns")
@@ -212,7 +248,10 @@ function Base.show(io::IO, skimmed::Skimmed)
         datetime_header = ["Name", "Type", "Missings", "Complete", "Min", "Max", "Hist."]
         datetime_rounded = [:completion_rate]
         datetime_formatters = (
-            ft_round(2, findall(n -> n in datetime_rounded, Tables.columnnames(datetime_table))),
+            ft_round(
+                2,
+                findall(n -> n in datetime_rounded, Tables.columnnames(datetime_table)),
+            ),
             formatter_percent(datetime_table, :completion_rate),
         )
         println(io, "Datetime columns")
