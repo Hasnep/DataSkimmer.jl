@@ -22,8 +22,7 @@ function unicode_histogram(x, n_bins::Integer)::String
         return repeat(" ", n_bins)
     else
         x = skipmissing(x)
-        min_value = minimum(x)
-        max_value = maximum(x)
+        min_value, max_value = extrema(x)
         bin_edges = range(min_value, max_value; length = n_bins + 1)
         weights = [
             count(datapoint -> edge_lower < datapoint <= edge_upper, x) for
