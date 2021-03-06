@@ -1,7 +1,11 @@
 """
 Create a range of equally spaced steps between two Dates or DateTimes.
 """
-function Base.range(start::T, stop::T; length::Integer) where {T <: Union{Dates.Date, Dates.DateTime}}
+function Base.range(
+    start::T,
+    stop::T;
+    length::Integer,
+) where {T <: Union{Dates.Date, Dates.DateTime}}
     range_width = stop - start
     T_width = typeof(range_width)
     step_width = T_width(round(Int, Dates.value(range_width) / (length - 1)))

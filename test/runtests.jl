@@ -9,7 +9,8 @@ using TimeSeries: TimeArray
 
 iris_dataframe = RDatasets.dataset("datasets", "iris")
 iris_csv = CSV.File(seekstart(CSV.write(IOBuffer(), iris_dataframe)))
-data_structarray = StructArray([(A = 1, B = 2, C = 3), (A = 4, B = 5, C = 6), (A = 7, B = 8, C = 9)])
+data_structarray =
+    StructArray([(A = 1, B = 2, C = 3), (A = 4, B = 5, C = 6), (A = 7, B = 8, C = 9)])
 timearray = TimeArray(RDatasets.dataset("ggplot2", "economics"), timestamp = :Date)
 datasets = Dict(
     "iris_dataframe" => iris_dataframe,
@@ -25,7 +26,8 @@ datasets = Dict(
             @test output isa String
             @test length(output) == n_bars
         end
-        @testset "Test unicode_histogram draws bars when $p% of the data is missing" for p in [0, 10, 50, 100]
+        @testset "Test unicode_histogram draws bars when $p% of the data is missing"
+        for p in 0:50:100
             input = Random.shuffle(vcat(repeat([missing], p), 1:p))
             output = DataSkimmer.unicode_histogram(input, 5)
             @test output isa String
