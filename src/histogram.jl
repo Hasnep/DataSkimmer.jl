@@ -28,8 +28,12 @@ function unicode_histogram(x, n_bins::Integer)::String
     end
     bin_edges = range(min_value, max_value; length = n_bins + 1)
     weights = [
-        count(datapoint -> edge_lower < datapoint <= edge_upper, x) for
-        (edge_lower, edge_upper) in partition(bin_edges, 2, 1)
+        if index == 1
+            count(datapoint -> edge_lower <= datapoint <= edge_upper, x)
+        else
+            count(datapoint -> edge_lower < datapoint <= edge_upper, x)
+        end for
+        (index, (edge_lower, edge_upper)) in enumerate(partition(bin_edges, 2, 1))
     ]
     weights_normalised = weights ./ n_nonmissing_datapoints
     bars = [w == 0 ? ' ' : Char(0x2581 + floor(Int, w * 8)) for w in weights]
