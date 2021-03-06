@@ -20,16 +20,18 @@ function unicode_histogram(x, n_bins::Integer)::String
     n_nonmissing_datapoints = count(!ismissing, x)
     if n_nonmissing_datapoints == 0
         return repeat(" ", n_bins)
-    else
-        x = skipmissing(x)
-        min_value, max_value = extrema(x)
-        bin_edges = range(min_value, max_value; length = n_bins + 1)
-        weights = [
-            count(datapoint -> edge_lower < datapoint <= edge_upper, x) for
-            (edge_lower, edge_upper) in partition(bin_edges, 2, 1)
-        ]
-        weights_normalised = weights ./ n_nonmissing_datapoints
-        bars = [w == 0 ? ' ' : Char(0x2581 + floor(Int, w * 8)) for w in weights]
-        return join(bars, "")
     end
+    x = skipmissing(x)
+    min_value, max_value = extrema(x)
+    if max_value == min_value
+        return repeat(" ", n_bins)
+    end
+    bin_edges = range(min_value, max_value; length = n_bins + 1)
+    weights = [
+        count(datapoint -> edge_lower < datapoint <= edge_upper, x) for
+        (edge_lower, edge_upper) in partition(bin_edges, 2, 1)
+    ]
+    weights_normalised = weights ./ n_nonmissing_datapoints
+    bars = [w == 0 ? ' ' : Char(0x2581 + floor(Int, w * 8)) for w in weights]
+    return join(bars, "")
 end
