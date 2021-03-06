@@ -49,5 +49,4 @@ datasets = Dict(
             @test string(skim(data)) isa String
         end
     end
-    include("test_formatting.jl")
 end
