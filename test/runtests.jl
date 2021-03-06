@@ -27,12 +27,12 @@ datasets = Dict(
             @test output isa String
             @test length(output) == n_bars
         end
-        @testset "Test unicode_histogram draws bars when $p% of the data is missing"
-        for p in 0:50:100
-            input = Random.shuffle(vcat(repeat([missing], p), 1:p))
-            output = DataSkimmer.unicode_histogram(input, 5)
+        @testset "Test unicode_histogram works when $p% is missing" for p in 0:50:100
+            n_bars = 5
+            input = vcat(1:(100 - p), repeat([missing], p))
+            output = DataSkimmer.unicode_histogram(input, n_bars)
             @test output isa String
-            @test length(output) == 5
+            @test length(output) == n_bars
         end
     end
     @testset "Test dataset '$ds_name'" for (ds_name, data) in datasets
