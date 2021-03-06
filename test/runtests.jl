@@ -3,20 +3,21 @@ import Random
 import RDatasets
 using DataFrames
 using DataSkimmer
+using Dates: Date
 using StructArrays: StructArray
 using Test
 using TimeSeries: TimeArray
 
-iris_dataframe = RDatasets.dataset("datasets", "iris")
-iris_csv = CSV.File(seekstart(CSV.write(IOBuffer(), iris_dataframe)))
-data_structarray =
-    StructArray([(A = 1, B = 2, C = 3), (A = 4, B = 5, C = 6), (A = 7, B = 8, C = 9)])
-timearray = TimeArray(RDatasets.dataset("ggplot2", "economics"), timestamp = :Date)
 datasets = Dict(
-    "iris_dataframe" => iris_dataframe,
-    "iris_csv" => iris_csv,
-    "structarray" => data_structarray,
-    "timearray" => timearray,
+    # "iris_dataframe" => RDatasets.dataset("datasets", "iris"),
+    # "iris_csv" => CSV.File(seekstart(CSV.write(IOBuffer(), iris_dataframe))),
+    "structarray" => StructArray([
+        (A = 1, B = "one", C = Date(2021, 1, 1)),
+        (A = 2, B = "two", C = Date(2021, 1, 2)),
+        (A = 3, B = "three", C = Date(2021, 1, 3)),
+    ]),
+    # "timearray" =>
+    #     TimeArray(RDatasets.dataset("ggplot2", "economics"), timestamp = :Date),
 )
 
 @testset "Test DataSkimmer.jl" begin
@@ -26,12 +27,12 @@ datasets = Dict(
             @test output isa String
             @test length(output) == n_bars
         end
-        @testset "Test unicode_histogram draws bars when $p% of the data is missing"
-        for p in 0:50:100
-            input = Random.shuffle(vcat(repeat([missing], p), 1:p))
-            output = DataSkimmer.unicode_histogram(input, 5)
+        @testset "Test unicode_histogram works when $p% is missing" for p in 0:50:100
+            n_bars = 5
+            input = vcat(1:(100 - p), repeat([missing], p))
+            output = DataSkimmer.unicode_histogram(input, n_bars)
             @test output isa String
-            @test length(output) == 5
+            @test length(output) == n_bars
         end
     end
     @testset "Test dataset '$ds_name'" for (ds_name, data) in datasets
