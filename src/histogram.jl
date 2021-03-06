@@ -8,7 +8,7 @@ function Base.range(
 ) where {T <: Union{Dates.Date, Dates.DateTime}}
     range_width = stop - start
     T_width = typeof(range_width)
-    step_width = T_width(round(Int, Dates.value(range_width) / (length - 1)))
+    step_width = T_width(div(Dates.value(range_width), length - 1, RoundUp))
     stop = start + step_width * (length - 1)
     return start:step_width:stop
 end
