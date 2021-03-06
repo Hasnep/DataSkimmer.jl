@@ -13,38 +13,38 @@ include("histogram.jl")
 export skim
 
 struct Summary
-    n_rows::Integer
-    n_columns::Integer
-    n_numeric::Integer
-    n_categorical::Integer
-    n_datetime::Integer
+    n_rows::Int64
+    n_columns::Int64
+    n_numeric::Int64
+    n_categorical::Int64
+    n_datetime::Int64
 end
 
 Base.@kwdef struct NumericColumn
     name::Symbol
     type::Type
-    n_missing::Integer
-    completion_rate::Real
-    mean::Real
-    standard_deviation::Real
-    minimum::Real
-    median::Real
-    maximum::Real
+    n_missing::Int64
+    completion_rate::Float64
+    mean::Float64
+    standard_deviation::Float64
+    minimum::Float64
+    median::Float64
+    maximum::Float64
     histogram::String
 end
 
 Base.@kwdef struct CategoricalColumn
     name::Symbol
     type::Type
-    n_missing::Integer
-    completion_rate::Real
+    n_missing::Int64
+    completion_rate::Float64
 end
 
 Base.@kwdef struct DateTimeColumn
     name::Symbol
     type::Type
-    n_missing::Integer
-    completion_rate::Real
+    n_missing::Int64
+    completion_rate::Float64
     minimum::Union{Dates.Date, Dates.DateTime}
     maximum::Union{Dates.Date, Dates.DateTime}
     histogram::String
