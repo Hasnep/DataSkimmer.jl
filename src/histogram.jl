@@ -36,6 +36,6 @@ function unicode_histogram(x, n_bins::Integer)::String
         (index, (edge_lower, edge_upper)) in enumerate(partition(bin_edges, 2, 1))
     ]
     weights_normalised = weights ./ n_nonmissing_datapoints
-    bars = [w == 0 ? ' ' : Char(0x2581 + floor(Int, w * 8)) for w in weights]
+    bars = [w == 0 ? ' ' : Char(0x2581 + floor(Int, w * 8)) for w in weights_normalised]
     return join(bars, "")
 end
