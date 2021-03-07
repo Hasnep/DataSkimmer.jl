@@ -2,7 +2,7 @@ module DataSkimmer
 
 import Tables
 using Statistics: mean, std, median
-using PrettyTables: pretty_table, tf_borderless, ft_round
+using PrettyTables: pretty_table, tf_borderless, ft_round, Crayon, hl_col
 using StructArrays
 using IterTools: partition
 import Dates
@@ -13,6 +13,7 @@ include("histogram.jl")
 export skim
 
 struct Summary
+    type::Type
     n_rows::Int64
     n_columns::Int64
     n_numeric::Int64
@@ -144,6 +145,7 @@ function skim(data)::Skimmed
 
     # Summary
     summary = Summary(
+        typeof(data),
         count_rows(data),
         count_columns(data),
         length(numeric_columns),
@@ -164,22 +166,31 @@ function formatter_percent(data, percent_name)
     end
 end
 
+plural(n) = n == 1 ? "" : "s"
+
+function plural() end
+
 function Base.show(io::IO, skimmed::Skimmed)
     # TODO: Use displaysize(stdout)[2] to abbreviate column headers when the table is too wide
     # Summary
     summary = skimmed.summary
+    summary_table = [
+        "Type" summary.type
+        "N. rows" summary.n_rows
+        "N. cols" summary.n_columns
+        "N. numeric cols" summary.n_numeric
+        "N. categorical cols" summary.n_categorical
+        "N. datetime cols" summary.n_datetime
+    ]
     pretty_table(
         io,
-        Dict(
-            field_name => getfield(summary, field_name) for
-            field_name in fieldnames(Summary)
-        );
+        summary_table;
         noheader = true,
         backend = :text,
-        tf = tf_borderless,
+        highlighters = (hl_col(1, Crayon(bold = true))),
     )
-
     println(io, "")
+
     # Numeric
     if length(skimmed.numeric_columns) > 0
         numeric_table = StructArray(skimmed.numeric_columns)
@@ -204,13 +215,12 @@ function Base.show(io::IO, skimmed::Skimmed)
             ),
             formatter_percent(numeric_table, :completion_rate),
         )
-        println(io, "Numeric columns")
+        println(io, "$(summary.n_numeric) numeric column$(plural(summary.n_numeric))")
         pretty_table(
             io,
             numeric_table,
             numeric_header;
             backend = :text,
-            tf = tf_borderless,
             formatters = numeric_formatters,
         )
     else
@@ -233,13 +243,15 @@ function Base.show(io::IO, skimmed::Skimmed)
             ),
             formatter_percent(categorical_table, :completion_rate),
         )
-        println(io, "Categorical columns")
+        println(
+            io,
+            "$(summary.n_categorical) categorical column$(plural(summary.n_categorical))",
+        )
         pretty_table(
             io,
             categorical_table,
             categorical_header;
             backend = :text,
-            tf = tf_borderless,
             formatters = categorical_formatters,
         )
     else
@@ -250,7 +262,7 @@ function Base.show(io::IO, skimmed::Skimmed)
     println(io, "")
     if length(skimmed.datetime_columns) > 0
         datetime_table = StructArray(skimmed.datetime_columns)
-        datetime_header = ["Name", "Type", "Missings", "Complete", "Min", "Max", "Hist."]
+        datetime_header = ["Name", "Type", "Missings", "Complete", "Min.", "Max.", "Hist."]
         datetime_rounded = [:completion_rate]
         datetime_formatters = (
             ft_round(
@@ -259,13 +271,12 @@ function Base.show(io::IO, skimmed::Skimmed)
             ),
             formatter_percent(datetime_table, :completion_rate),
         )
-        println(io, "Datetime columns")
+        println(io, "$(summary.n_datetime) datetime column$(plural(summary.n_datetime))")
         pretty_table(
             io,
             datetime_table,
             datetime_header;
             backend = :text,
-            tf = tf_borderless,
             formatters = datetime_formatters,
         )
     else
