@@ -8,15 +8,18 @@ using StructArrays: StructArray
 using Test
 using TimeSeries: TimeArray
 
+iris_dataframe = RDatasets.dataset("datasets", "iris")
+
 datasets = Dict(
-    # "iris_dataframe" => RDatasets.dataset("datasets", "iris"),
-    # "iris_csv" => CSV.File(seekstart(CSV.write(IOBuffer(), iris_dataframe))),
+    "iris_dataframe" => iris_dataframe,
+    "iris_csv" => CSV.File(seekstart(CSV.write(IOBuffer(), iris_dataframe))),
     "struct_array" => StructArray([
         (A = 1, B = "one", C = Date(2021, 1, 1)),
         (A = 2, B = "two", C = Date(2021, 1, 2)),
         (A = 3, B = "three", C = Date(2021, 1, 3)),
     ]),
-    # "timearray" =>    TimeArray(RDatasets.dataset("ggplot2", "economics"), timestamp = :Date),
+    "timearray" =>
+        TimeArray(RDatasets.dataset("ggplot2", "economics"), timestamp = :Date),
     "loomis_dataframe" => RDatasets.dataset("COUNT", "loomis"),
 )
 
