@@ -5,7 +5,7 @@ Based on the [skimr](https://docs.ropensci.org/skimr/) R package.
 
 ## Installation
 
-From the Julia REPL, type `]` to enter the Pkg REPL:
+From the Julia REPL, type `]` to enter the Pkg REPL, then run:
 
 ```text
 add https://github.com/Hasnep/DataSkimmer.jl
@@ -24,25 +24,37 @@ Pkg.add(url="https://github.com/Hasnep/DataSkimmer.jl")
 using DataSkimmer
 using RDatasets
 
-iris = dataset("datasets", "iris")
+iris = RDatasets.dataset("datasets", "iris") # Load data
 
 skim(iris)
 ```
 
 ```text
-         n_rows   150
-      n_columns     5
-  n_categorical     1
-      n_numeric     4
+┌─────────────────────┬───────────┐
+│                Type │ DataFrame │
+│             N. rows │       150 │
+│             N. cols │         5 │
+│     N. numeric cols │         4 │
+│ N. categorical cols │         1 │
+│    N. datetime cols │         0 │
+└─────────────────────┴───────────┘
 
-         Name      Type   Missings   Complete   Mean   Std.   Min.   Med.   Max.   Hist.
+4 numeric columns
+┌─────────────┬─────────┬──────────┬──────────┬──────┬──────┬──────┬──────┬──────┬───────┐
+│        Name │    Type │ Missings │ Complete │ Mean │ Std. │ Min. │ Med. │ Max. │ Hist. │
+├─────────────┼─────────┼──────────┼──────────┼──────┼──────┼──────┼──────┼──────┼───────┤
+│ SepalLength │ Float64 │        0 │   100.0% │ 5.84 │ 0.83 │  4.3 │  5.8 │  7.9 │ ▂▃▃▂▁ │
+│  SepalWidth │ Float64 │        0 │   100.0% │ 3.06 │ 0.44 │  2.0 │  3.0 │  4.4 │ ▁▃▄▂▁ │
+│ PetalLength │ Float64 │        0 │   100.0% │ 3.76 │ 1.77 │  1.0 │ 4.35 │  6.9 │ ▃▁▂▃▁ │
+│  PetalWidth │ Float64 │        0 │   100.0% │  1.2 │ 0.76 │  0.1 │  1.3 │  2.5 │ ▃▁▃▂▂ │
+└─────────────┴─────────┴──────────┴──────────┴──────┴──────┴──────┴──────┴──────┴───────┘
 
-  SepalLength   Float64          0     100.0%   5.84   0.83    4.3    5.8    7.9   ▂▃▃▂▁
-   SepalWidth   Float64          0     100.0%   3.06   0.44    2.0    3.0    4.4   ▁▃▄▂▁
-  PetalLength   Float64          0     100.0%   3.76   1.77    1.0   4.35    6.9   ▃▁▂▃▁
-   PetalWidth   Float64          0     100.0%    1.2   0.76    0.1    1.3    2.5   ▃▁▃▂▂
+1 categorical column
+┌─────────┬────────────────────────────────┬──────────┬──────────┐
+│    Name │                           Type │ Missings │ Complete │
+├─────────┼────────────────────────────────┼──────────┼──────────┤
+│ Species │ CategoricalValue{String,UInt8} │        0 │   100.0% │
+└─────────┴────────────────────────────────┴──────────┴──────────┘
 
-     Name                             Type   Missings   Complete
-
-  Species   CategoricalValue{String,UInt8}          0     100.0%
+No datetime columns
 ```
