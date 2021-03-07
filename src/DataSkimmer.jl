@@ -83,18 +83,19 @@ function skim(data)::Skimmed
     numeric_columns =
         map(
             column_name -> begin
-                n_missing = count(ismissing, Tables.getcolumn(data, column_name))
+                column = Tables.getcolumn(data, column_name)
+                n_missing = count(ismissing, column)
                 return NumericColumn(
                     name = column_name,
                     type = Tables.columntype(data, column_name),
                     n_missing = n_missing,
                     completion_rate = 1 - (n_missing / n_rows),
-                    mean = mean(Tables.getcolumn(data, column_name)),
-                    standard_deviation = std(Tables.getcolumn(data, column_name)),
-                    minimum = minimum(Tables.getcolumn(data, column_name)),
-                    median = median(Tables.getcolumn(data, column_name)),
-                    maximum = maximum(Tables.getcolumn(data, column_name)),
-                    histogram = unicode_histogram(Tables.getcolumn(data, column_name), 5),
+                    mean = mean(column),
+                    standard_deviation = std(column),
+                    minimum = minimum(column),
+                    median = median(column),
+                    maximum = maximum(column),
+                    histogram = unicode_histogram(column, 5),
                 )
             end,
             numeric_column_names,
@@ -123,15 +124,16 @@ function skim(data)::Skimmed
     datetime_columns =
         map(
             column_name -> begin
-                n_missing = count(ismissing, Tables.getcolumn(data, column_name))
+                column = Tables.getcolumn(data, column_name)
+                n_missing = count(ismissing, column)
                 return DateTimeColumn(
                     name = column_name,
                     type = Tables.columntype(data, column_name),
                     n_missing = n_missing,
                     completion_rate = 1 - (n_missing / n_rows),
-                    minimum = minimum(Tables.getcolumn(data, column_name)),
-                    maximum = maximum(Tables.getcolumn(data, column_name)),
-                    histogram = unicode_histogram(Tables.getcolumn(data, column_name), 5),
+                    minimum = minimum(column),
+                    maximum = maximum(column),
+                    histogram = unicode_histogram(column, 5),
                 )
             end,
             datetime_column_names,
