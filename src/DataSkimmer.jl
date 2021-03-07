@@ -20,7 +20,7 @@ struct Summary
     n_datetime::Int64
 end
 
-Base.@kwdef struct NumericColumn
+struct NumericColumn
     name::Symbol
     type::Type
     n_missing::Int64
@@ -31,16 +31,43 @@ Base.@kwdef struct NumericColumn
     median::Float64
     maximum::Float64
     histogram::String
+
+    function NumericColumn(data, column_name)
+        column = Tables.getcolumn(data, column_name)
+        n_missing = count(ismissing, column)
+        return new(
+            column_name,
+            Tables.columntype(data, column_name),
+            n_missing,
+            1 - (n_missing / count_rows(data)),
+            mean(column),
+            std(column),
+            minimum(column),
+            median(column),
+            maximum(column),
+            unicode_histogram(column, 5),
+        )
+    end
 end
 
-Base.@kwdef struct CategoricalColumn
+struct CategoricalColumn
     name::Symbol
     type::Type
     n_missing::Int64
     completion_rate::Float64
+
+    function CategoricalColumn(data, column_name)
+        n_missing = count(ismissing, Tables.getcolumn(data, column_name))
+        return new(
+            column_name,
+            Tables.columntype(data, column_name),
+            n_missing,
+            1 - (n_missing / count_rows(data)),
+        )
+    end
 end
 
-Base.@kwdef struct DateTimeColumn
+struct DateTimeColumn
     name::Symbol
     type::Type
     n_missing::Int64
@@ -48,6 +75,20 @@ Base.@kwdef struct DateTimeColumn
     minimum::Union{Dates.Date, Dates.DateTime}
     maximum::Union{Dates.Date, Dates.DateTime}
     histogram::String
+
+    function DateTimeColumn(data, column_name)
+        column = Tables.getcolumn(data, column_name)
+        n_missing = count(ismissing, column)
+        return new(
+            column_name,
+            Tables.columntype(data, column_name),
+            n_missing,
+            1 - (n_missing / count_rows(data)),
+            minimum(column),
+            maximum(column),
+            unicode_histogram(column, 5),
+        )
+    end
 end
 
 struct Skimmed
@@ -65,9 +106,6 @@ Skim any Tables.jl compatible table.
 function skim(data)::Skimmed
     @assert Tables.istable(data) "Input must be a table"
 
-    n_rows = count_rows(data)
-    n_columns = count_columns(data)
-
     data_schema = Tables.schema(data)
     if isnothing(data_schema)
         column_names = Tables.columnnames(categorical_table)
@@ -79,70 +117,35 @@ function skim(data)::Skimmed
     end
 
     # Numeric columns
-    numeric_column_names = filter(n -> Tables.columntype(data, n) <: Real, column_names)
+    numeric_column_names = filter(
+        column_name -> is_numeric(Tables.columntype(data, column_name)),
+        column_names,
+    )
     numeric_columns =
-        map(
-            column_name -> begin
-                column = Tables.getcolumn(data, column_name)
-                n_missing = count(ismissing, column)
-                return NumericColumn(
-                    name = column_name,
-                    type = Tables.columntype(data, column_name),
-                    n_missing = n_missing,
-                    completion_rate = 1 - (n_missing / n_rows),
-                    mean = mean(column),
-                    standard_deviation = std(column),
-                    minimum = minimum(column),
-                    median = median(column),
-                    maximum = maximum(column),
-                    histogram = unicode_histogram(column, 5),
-                )
-            end,
-            numeric_column_names,
-        ) |> collect
+        collect(map(column_name -> NumericColumn(data, column_name), numeric_column_names))
 
     # Categorical columns
-    categorical_column_names =
-        filter(n -> is_categorical(Tables.columntype(data, n)), column_names)
-    categorical_columns =
-        map(
-            column_name -> begin
-                n_missing = count(ismissing, Tables.getcolumn(data, column_name))
-                return CategoricalColumn(
-                    name = column_name,
-                    type = Tables.columntype(data, column_name),
-                    n_missing = n_missing,
-                    completion_rate = 1 - (n_missing / n_rows),
-                )
-            end,
-            categorical_column_names,
-        ) |> collect
+    categorical_column_names = filter(
+        column_name -> is_categorical(Tables.columntype(data, column_name)),
+        column_names,
+    )
+    categorical_columns = collect(
+        map(column_name -> CategoricalColumn(data, column_name), categorical_column_names),
+    )
 
-    # Datetime columns
-    datetime_column_names =
-        filter(n -> is_datetime(Tables.columntype(data, n)), column_names)
-    datetime_columns =
-        map(
-            column_name -> begin
-                column = Tables.getcolumn(data, column_name)
-                n_missing = count(ismissing, column)
-                return DateTimeColumn(
-                    name = column_name,
-                    type = Tables.columntype(data, column_name),
-                    n_missing = n_missing,
-                    completion_rate = 1 - (n_missing / n_rows),
-                    minimum = minimum(column),
-                    maximum = maximum(column),
-                    histogram = unicode_histogram(column, 5),
-                )
-            end,
-            datetime_column_names,
-        ) |> collect
+    # DateTime columns
+    datetime_column_names = filter(
+        column_name -> is_datetime(Tables.columntype(data, column_name)),
+        column_names,
+    )
+    datetime_columns = collect(
+        map(column_name -> DateTimeColumn(data, column_name), datetime_column_names),
+    )
 
     # Summary
     summary = Summary(
-        n_rows,
-        n_columns,
+        count_rows(data),
+        count_columns(data),
         length(numeric_columns),
         length(categorical_columns),
         length(datetime_columns),
@@ -243,7 +246,7 @@ function Base.show(io::IO, skimmed::Skimmed)
         println(io, "No categorical columns")
     end
 
-    # Datetime
+    # DateTime
     println(io, "")
     if length(skimmed.datetime_columns) > 0
         datetime_table = StructArray(skimmed.datetime_columns)
