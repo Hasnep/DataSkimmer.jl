@@ -21,11 +21,12 @@ Pkg.add(url="https://github.com/Hasnep/DataSkimmer.jl")
 ## Example
 
 ```julia
-using DataSkimmer
+# Load some data
 using RDatasets
+iris = RDatasets.dataset("datasets", "iris")
 
-iris = RDatasets.dataset("datasets", "iris") # Load data
-
+# Skim the data
+using DataSkimmer
 skim(iris)
 ```
 
