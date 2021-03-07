@@ -26,5 +26,5 @@ function count_columns(data)::Integer
 end
 
 is_datetime(x)::Bool = x == Dates.Date || x == Dates.DateTime
-
+is_numeric(x)::Bool = x <: Real
 is_categorical(x)::Bool = !(x <: Real || is_datetime(x))
