@@ -1,8 +1,12 @@
 name: FormattingChecker
 
 on:
-  - push
-  - pull_request
+  push:
+    paths:
+      - "*.jl"
+  pull_request:
+    paths:
+      - "*.jl"
 
 jobs:
   build:
