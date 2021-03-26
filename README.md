@@ -8,14 +8,14 @@ Based on the [skimr](https://docs.ropensci.org/skimr/) R package.
 From the Julia REPL, type `]` to enter the Pkg REPL, then run:
 
 ```text
-add https://github.com/Hasnep/DataSkimmer.jl
+add DataSkimmer
 ```
 
 Or run from the Julia REPL:
 
 ```julia
 import Pkg
-Pkg.add(url="https://github.com/Hasnep/DataSkimmer.jl")
+Pkg.add("DataSkimmer")
 ```
 
 ## Example
@@ -58,4 +58,11 @@ skim(iris)
 └─────────┴────────────────────────────────┴──────────┴──────────┘
 
 No datetime columns
+```
+
+skim
+
+```text
+s = skim(iris)
+
 ```
