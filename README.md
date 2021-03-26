@@ -59,10 +59,3 @@ skim(iris)
 
 No datetime columns
 ```
-
-skim
-
-```text
-s = skim(iris)
-
-```
