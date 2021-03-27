@@ -156,20 +156,6 @@ function skim(data)::Skimmed
     return Skimmed(summary, numeric_columns, categorical_columns, datetime_columns)
 end
 
-function formatter_percent(data, percent_name)
-    return (v, i, j) -> begin
-        if findfirst(n -> n == percent_name, Tables.columnnames(data)) == j
-            "$(100 * v)%"
-        else
-            v
-        end
-    end
-end
-
-plural(n) = n == 1 ? "" : "s"
-
-function plural() end
-
 function Base.show(io::IO, skimmed::Skimmed)
     # TODO: Use displaysize(stdout)[2] to abbreviate column headers when the table is too wide
     # Summary
