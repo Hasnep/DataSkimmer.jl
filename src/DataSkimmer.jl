@@ -189,7 +189,6 @@ function Base.show(io::IO, skimmed::Skimmed)
         backend = :text,
         highlighters = (hl_col(1, Crayon(bold = true))),
     )
-    println(io, "")
 
     # Numeric
     if length(skimmed.numeric_columns) > 0
@@ -215,6 +214,7 @@ function Base.show(io::IO, skimmed::Skimmed)
             ),
             formatter_percent(numeric_table, :completion_rate),
         )
+        println(io, "")
         println(io, "$(summary.n_numeric) numeric column$(plural(summary.n_numeric))")
         pretty_table(
             io,
@@ -223,12 +223,9 @@ function Base.show(io::IO, skimmed::Skimmed)
             backend = :text,
             formatters = numeric_formatters,
         )
-    else
-        println(io, "No numeric columns")
     end
 
     # Categorical
-    println(io, "")
     if length(skimmed.categorical_columns) > 0
         categorical_table = StructArray(skimmed.categorical_columns)
         categorical_header = ["Name", "Type", "Missings", "Complete"]
@@ -243,6 +240,7 @@ function Base.show(io::IO, skimmed::Skimmed)
             ),
             formatter_percent(categorical_table, :completion_rate),
         )
+        println(io, "")
         println(
             io,
             "$(summary.n_categorical) categorical column$(plural(summary.n_categorical))",
@@ -254,12 +252,9 @@ function Base.show(io::IO, skimmed::Skimmed)
             backend = :text,
             formatters = categorical_formatters,
         )
-    else
-        println(io, "No categorical columns")
     end
 
     # DateTime
-    println(io, "")
     if length(skimmed.datetime_columns) > 0
         datetime_table = StructArray(skimmed.datetime_columns)
         datetime_header = ["Name", "Type", "Missings", "Complete", "Min.", "Max.", "Hist."]
@@ -271,6 +266,7 @@ function Base.show(io::IO, skimmed::Skimmed)
             ),
             formatter_percent(datetime_table, :completion_rate),
         )
+        println(io, "")
         println(io, "$(summary.n_datetime) datetime column$(plural(summary.n_datetime))")
         pretty_table(
             io,
@@ -279,8 +275,6 @@ function Base.show(io::IO, skimmed::Skimmed)
             backend = :text,
             formatters = datetime_formatters,
         )
-    else
-        println(io, "No datetime columns")
     end
 end
 
