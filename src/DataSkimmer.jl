@@ -157,6 +157,8 @@ function skim(data)::Skimmed
 end
 
 function Base.show(io::IO, skimmed::Skimmed)
+    n_decimal_places::Integer = 1
+
     # TODO: Use displaysize(stdout)[2] to abbreviate column headers when the table is too wide
     # Summary
     summary = skimmed.summary
@@ -191,14 +193,17 @@ function Base.show(io::IO, skimmed::Skimmed)
             "Max.",
             "Hist.",
         ]
-        numeric_rounded =
-            [:completion_rate, :mean, :standard_deviation, :minimum, :median, :maximum]
         numeric_formatters = (
-            ft_round(
-                2,
-                findall(n -> n in numeric_rounded, Tables.columnnames(numeric_table)),
+            formatter_numeric(
+                numeric_table,
+                [:mean, :standard_deviation, :minimum, :median, :maximum];
+                n_decimal_places = n_decimal_places,
             ),
-            formatter_percent(numeric_table, :completion_rate),
+            formatter_percent(
+                numeric_table,
+                [:completion_rate];
+                n_decimal_places = n_decimal_places,
+            ),
         )
         println(io, "")
         println(io, "$(summary.n_numeric) numeric column$(plural(summary.n_numeric))")
@@ -215,16 +220,10 @@ function Base.show(io::IO, skimmed::Skimmed)
     if length(skimmed.categorical_columns) > 0
         categorical_table = StructArray(skimmed.categorical_columns)
         categorical_header = ["Name", "Type", "Missings", "Complete"]
-        categorical_rounded = [:completion_rate]
-        categorical_formatters = (
-            ft_round(
-                2,
-                findall(
-                    n -> n in categorical_rounded,
-                    Tables.columnnames(categorical_table),
-                ),
-            ),
-            formatter_percent(categorical_table, :completion_rate),
+        categorical_formatters = formatter_percent(
+            categorical_table,
+            [:completion_rate];
+            n_decimal_places = n_decimal_places,
         )
         println(io, "")
         println(
@@ -244,13 +243,10 @@ function Base.show(io::IO, skimmed::Skimmed)
     if length(skimmed.datetime_columns) > 0
         datetime_table = StructArray(skimmed.datetime_columns)
         datetime_header = ["Name", "Type", "Missings", "Complete", "Min.", "Max.", "Hist."]
-        datetime_rounded = [:completion_rate]
-        datetime_formatters = (
-            ft_round(
-                2,
-                findall(n -> n in datetime_rounded, Tables.columnnames(datetime_table)),
-            ),
-            formatter_percent(datetime_table, :completion_rate),
+        datetime_formatters = formatter_percent(
+            datetime_table,
+            [:completion_rate];
+            n_decimal_places = n_decimal_places,
         )
         println(io, "")
         println(io, "$(summary.n_datetime) datetime column$(plural(summary.n_datetime))")
