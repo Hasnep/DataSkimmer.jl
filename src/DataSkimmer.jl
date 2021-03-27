@@ -2,8 +2,8 @@ module DataSkimmer
 
 import Tables
 using Statistics: mean, std, median
-using PrettyTables: pretty_table, tf_borderless, ft_round, Crayon, hl_col
-using StructArrays
+using PrettyTables: Crayon, ft_printf, hl_col, pretty_table
+using StructArrays: StructArray
 using IterTools: partition
 import Dates
 
