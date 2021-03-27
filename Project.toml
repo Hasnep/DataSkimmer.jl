@@ -1,7 +1,7 @@
 name = "DataSkimmer"
 uuid = "54a5dec1-bae8-447e-bd66-474f7865e6c6"
 authors = ["Hannes <hasnep@gmail.com>"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
