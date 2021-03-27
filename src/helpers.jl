@@ -28,3 +28,15 @@ end
 is_datetime(x)::Bool = x == Dates.Date || x == Dates.DateTime
 is_numeric(x)::Bool = x <: Real
 is_categorical(x)::Bool = !(x <: Real || is_datetime(x))
+
+function formatter_percent(data, percent_name)
+    return (v, i, j) -> begin
+        if findfirst(n -> n == percent_name, Tables.columnnames(data)) == j
+            "$(100 * v)%"
+        else
+            v
+        end
+    end
+end
+
+plural(n) = n == 1 ? "" : "s"
