@@ -157,8 +157,6 @@ function skim(data)::Skimmed
 end
 
 function Base.show(io::IO, skimmed::Skimmed)
-    n_decimal_places::Integer = 1
-
     # TODO: Use displaysize(stdout)[2] to abbreviate column headers when the table is too wide
     # Summary
     summary = skimmed.summary
@@ -197,13 +195,9 @@ function Base.show(io::IO, skimmed::Skimmed)
             formatter_numeric(
                 numeric_table,
                 [:mean, :standard_deviation, :minimum, :median, :maximum];
-                n_decimal_places = n_decimal_places,
+                n_decimal_places = 2,
             ),
-            formatter_percent(
-                numeric_table,
-                [:completion_rate];
-                n_decimal_places = n_decimal_places,
-            ),
+            formatter_percent(numeric_table, [:completion_rate]; n_decimal_places = 1),
         )
         println(io, "")
         println(io, "$(summary.n_numeric) numeric column$(plural(summary.n_numeric))")
@@ -220,12 +214,8 @@ function Base.show(io::IO, skimmed::Skimmed)
     if length(skimmed.categorical_columns) > 0
         categorical_table = StructArray(skimmed.categorical_columns)
         categorical_header = ["Name", "Type", "Missings", "Complete"]
-        categorical_formatters = formatter_percent(
-            categorical_table,
-            [:completion_rate];
-            n_decimal_places = n_decimal_places,
-        )
-        println(io, "")
+        categorical_formatters =
+            formatter_percent(categorical_table, [:completion_rate]; n_decimal_places = 1)
         println(
             io,
             "$(summary.n_categorical) categorical column$(plural(summary.n_categorical))",
@@ -243,12 +233,8 @@ function Base.show(io::IO, skimmed::Skimmed)
     if length(skimmed.datetime_columns) > 0
         datetime_table = StructArray(skimmed.datetime_columns)
         datetime_header = ["Name", "Type", "Missings", "Complete", "Min.", "Max.", "Hist."]
-        datetime_formatters = formatter_percent(
-            datetime_table,
-            [:completion_rate];
-            n_decimal_places = n_decimal_places,
-        )
-        println(io, "")
+        datetime_formatters =
+            formatter_percent(datetime_table, [:completion_rate]; n_decimal_places = 1)
         println(io, "$(summary.n_datetime) datetime column$(plural(summary.n_datetime))")
         pretty_table(
             io,
