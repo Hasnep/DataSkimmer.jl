@@ -216,6 +216,7 @@ function Base.show(io::IO, skimmed::Skimmed)
         categorical_header = ["Name", "Type", "Missings", "Complete"]
         categorical_formatters =
             formatter_percent(categorical_table, [:completion_rate]; n_decimal_places = 1)
+        println(io, "")
         println(
             io,
             "$(summary.n_categorical) categorical column$(plural(summary.n_categorical))",
@@ -235,6 +236,7 @@ function Base.show(io::IO, skimmed::Skimmed)
         datetime_header = ["Name", "Type", "Missings", "Complete", "Min.", "Max.", "Hist."]
         datetime_formatters =
             formatter_percent(datetime_table, [:completion_rate]; n_decimal_places = 1)
+        println(io, "")
         println(io, "$(summary.n_datetime) datetime column$(plural(summary.n_datetime))")
         pretty_table(
             io,
