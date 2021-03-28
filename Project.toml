@@ -1,6 +1,6 @@
 name = "DataSkimmer"
 uuid = "54a5dec1-bae8-447e-bd66-474f7865e6c6"
-authors = ["Hannes <hasnep@gmail.com>"]
+authors = ["Hannes <h@nnes.dev>"]
 version = "0.1.1"
 
 [deps]
