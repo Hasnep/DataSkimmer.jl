@@ -21,6 +21,9 @@ datasets = Dict(
     "timearray" =>
         TimeArray(RDatasets.dataset("ggplot2", "economics"), timestamp = :Date),
     "loomis_dataframe" => RDatasets.dataset("COUNT", "loomis"),
+    "vector_of_named_tuples" =>
+        [(; a = 1, b = 'x'), (; a = 2, b = 'y'), (; a = 3, b = 'z')],
+    "named_tuple_of_vectors" => (; a = 1:3, b = 'x':'z'),
 )
 
 @testset "Test DataSkimmer.jl" begin
