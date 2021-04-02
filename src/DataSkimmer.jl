@@ -198,6 +198,7 @@ function Base.show(io::IO, skimmed::Skimmed)
                 n_decimal_places = 2,
             ),
             formatter_percent(numeric_table, [:completion_rate]; n_decimal_places = 1),
+            formatter_missing,
         )
         println(io, "")
         println(io, "$(summary.n_numeric) numeric column$(plural(summary.n_numeric))")

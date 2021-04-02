@@ -45,4 +45,6 @@ function formatter_percent(data, columns_to_format; n_decimal_places::Integer)
     end
 end
 
+formatter_missing(v, i, j) = ismissing(v) ? "" : v
+
 plural(n) = n == 1 ? "" : "s"
