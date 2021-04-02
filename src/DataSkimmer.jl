@@ -105,7 +105,9 @@ end
 Skim any Tables.jl compatible table.
 """
 function skim(data)::Skimmed
-    @assert Tables.istable(data) "Input must be a table"
+    if !Tables.istable(data)
+        throw(ArgumentError("Input to skim() must be a valid Tables.jl table."))
+    end
 
     data_schema = Tables.schema(data)
     if isnothing(data_schema)
