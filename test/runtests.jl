@@ -53,4 +53,7 @@ datasets = Dict(
             @test string(skim(data)) isa String
         end
     end
+    @testset "Test skim() raises an error for invalid input" begin
+        @test_throws ArgumentError skim("abc")
+    end
 end
