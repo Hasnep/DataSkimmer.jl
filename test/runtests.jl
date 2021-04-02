@@ -21,6 +21,7 @@ datasets = Dict(
     "timearray" =>
         TimeArray(RDatasets.dataset("ggplot2", "economics"), timestamp = :Date),
     "loomis_dataframe" => RDatasets.dataset("COUNT", "loomis"),
+    "empty_dataframe" => DataFrame(x = [], y = Int64[], z = String[]),
 )
 
 @testset "Test DataSkimmer.jl" begin
