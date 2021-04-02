@@ -38,8 +38,11 @@ end
 function formatter_percent(data, columns_to_format; n_decimal_places::Integer)
     format_string = "%.$(n_decimal_places)f%%"
     column_indices = findall(n -> n in columns_to_format, Tables.columnnames(data))
-    return (v, i, j) ->
-        ft_printf(format_string, column_indices)(typeof(v) <: Number ? 100 * v : v, i, j)
+    return (v, i, j) -> if typeof(v) <: Number && j in column_indices
+        ft_printf(format_string, column_indices)(100 * v, i, j)
+    else
+        v
+    end
 end
 
 plural(n) = n == 1 ? "" : "s"
