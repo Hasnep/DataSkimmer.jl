@@ -26,28 +26,28 @@ struct NumericColumn
     type::Type
     n_missing::Int64
     completion_rate::Float64
-    mean::Float64
-    standard_deviation::Float64
-    minimum::Float64
-    median::Float64
-    maximum::Float64
+    mean::Union{Float64, Missing}
+    standard_deviation::Union{Float64, Missing}
+    minimum::Union{Float64, Missing}
+    median::Union{Float64, Missing}
+    maximum::Union{Float64, Missing}
     histogram::String
 
     function NumericColumn(data, column_name)
         column = Tables.getcolumn(data, column_name)
+        type = Tables.columntype(data, column_name)
         n_missing = count(ismissing, column)
-        return new(
-            column_name,
-            Tables.columntype(data, column_name),
-            n_missing,
-            1 - (n_missing / count_rows(data)),
-            mean(column),
-            std(column),
-            minimum(column),
-            median(column),
-            maximum(column),
-            unicode_histogram(column, 5),
-        )
+        n_rows = count_rows(data)
+        completion_rate = 1 - (n_missing / n_rows)
+        # Check if all rows are missing
+        if n_missing == n_rows
+            aggregated = repeat([missing], 5)
+        else
+            column = skipmissing(column)
+            aggregated = [f(column) for f in [mean, std, minimum, median, maximum]]
+        end
+        histogram = unicode_histogram(column, 5)
+        return new(column_name, type, n_missing, completion_rate, aggregated..., histogram)
     end
 end
 
