@@ -158,10 +158,7 @@ function skim(data)::Skimmed
     return Skimmed(summary, numeric_columns, categorical_columns, datetime_columns)
 end
 
-function Base.show(io::IO, skimmed::Skimmed)
-    # TODO: Use displaysize(stdout)[2] to abbreviate column headers when the table is too wide
-    # Summary
-    summary = skimmed.summary
+function Base.show(io::IO, summary::Summary)
     summary_table = [
         "Type" summary.type
         "N. rows" summary.n_rows
@@ -177,10 +174,13 @@ function Base.show(io::IO, skimmed::Skimmed)
         backend = :text,
         highlighters = (hl_col(1, Crayon(bold = true))),
     )
+    return
+end
 
-    # Numeric
-    if length(skimmed.numeric_columns) > 0
-        numeric_table = StructArray(skimmed.numeric_columns)
+function Base.show(io::IO, numeric_columns::Vector{NumericColumn})
+    n_numeric_columns = length(numeric_columns)
+    if n_numeric_columns > 0
+        numeric_table = StructArray(numeric_columns)
         numeric_header = [
             "Name",
             "Type",
@@ -202,8 +202,7 @@ function Base.show(io::IO, skimmed::Skimmed)
             formatter_percent(numeric_table, [:completion_rate]; n_decimal_places = 1),
             formatter_missing,
         )
-        println(io, "")
-        println(io, "$(summary.n_numeric) numeric column$(plural(summary.n_numeric))")
+        println(io, "$(n_numeric_columns) numeric column$(plural(n_numeric_columns))")
         pretty_table(
             io,
             numeric_table,
@@ -212,17 +211,19 @@ function Base.show(io::IO, skimmed::Skimmed)
             formatters = numeric_formatters,
         )
     end
+    return
+end
 
-    # Categorical
-    if length(skimmed.categorical_columns) > 0
-        categorical_table = StructArray(skimmed.categorical_columns)
+function Base.show(io::IO, categorical_columns::Vector{CategoricalColumn})
+    n_categorical_columns = length(categorical_columns)
+    if n_categorical_columns > 0
+        categorical_table = StructArray(categorical_columns)
         categorical_header = ["Name", "Type", "Missings", "Complete"]
         categorical_formatters =
             formatter_percent(categorical_table, [:completion_rate]; n_decimal_places = 1)
-        println(io, "")
         println(
             io,
-            "$(summary.n_categorical) categorical column$(plural(summary.n_categorical))",
+            "$(n_categorical_columns) categorical column$(plural(n_categorical_columns))",
         )
         pretty_table(
             io,
@@ -232,15 +233,17 @@ function Base.show(io::IO, skimmed::Skimmed)
             formatters = categorical_formatters,
         )
     end
+    return
+end
 
-    # DateTime
-    if length(skimmed.datetime_columns) > 0
-        datetime_table = StructArray(skimmed.datetime_columns)
+function Base.show(io::IO, datetime_columns::Vector{DateTimeColumn})
+    n_datetime_columns = length(datetime_columns)
+    if n_datetime_columns > 0
+        datetime_table = StructArray(datetime_columns)
         datetime_header = ["Name", "Type", "Missings", "Complete", "Min.", "Max.", "Hist."]
         datetime_formatters =
             formatter_percent(datetime_table, [:completion_rate]; n_decimal_places = 1)
-        println(io, "")
-        println(io, "$(summary.n_datetime) datetime column$(plural(summary.n_datetime))")
+        println(io, "$(n_datetime_columns) datetime column$(plural(n_datetime_columns))")
         pretty_table(
             io,
             datetime_table,
@@ -249,6 +252,15 @@ function Base.show(io::IO, skimmed::Skimmed)
             formatters = datetime_formatters,
         )
     end
+    return
 end
 
+function Base.show(io::IO, skimmed::Skimmed)
+    println(io, skimmed.summary)
+    println(io, skimmed.numeric_columns)
+    println(io, skimmed.categorical_columns)
+    println(io, skimmed.datetime_columns)
+    return
 end
+
+end # module
