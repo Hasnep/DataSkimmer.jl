@@ -104,10 +104,12 @@ end
 
 Skim any Tables.jl compatible table.
 """
-function skim(data)::Skimmed
-    if !Tables.istable(data)
+function skim(input_data)::Skimmed
+    if !Tables.istable(input_data)
         throw(ArgumentError("Input to skim() must be a valid Tables.jl table."))
     end
+
+    data = Tables.columns(input_data)
 
     data_schema = Tables.schema(data)
     if isnothing(data_schema)
