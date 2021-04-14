@@ -5,7 +5,11 @@ function count_rows(data)::Integer
     if Tables.rowaccess(data)
         return length(Tables.rows(data))
     else
-        # data already Tables.columns
+        # Because we wrapped in
+        # Tables.columns earlier, the
+        # output of `getcolumn(data, 1)`
+        # is guaranteed to have `length`
+        # defined.
         return nrows = length(Tables.getcolumn(data, 1))
     end
 end
