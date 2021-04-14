@@ -113,7 +113,7 @@ function skim(input_data)::Skimmed
 
     data_schema = Tables.schema(data)
     if isnothing(data_schema)
-        column_names = Tables.columnnames(categorical_table)
+        column_names = Tables.columnnames(data)
         column_types = missing
         @error "Can't get column types"
     else
