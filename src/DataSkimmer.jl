@@ -173,7 +173,7 @@ function Base.show(io::IO, summary::Summary)
         io,
         summary_table;
         noheader = true,
-        backend = :text,
+        backend = Val(:text),
         highlighters = (hl_col(1, Crayon(bold = true))),
     )
     return
@@ -207,9 +207,9 @@ function Base.show(io::IO, numeric_columns::Vector{NumericColumn})
         println(io, "$(n_numeric_columns) numeric column$(plural(n_numeric_columns))")
         pretty_table(
             io,
-            numeric_table,
-            numeric_header;
-            backend = :text,
+            numeric_table;
+            header = numeric_header,
+            backend = Val(:text),
             formatters = numeric_formatters,
         )
     end
@@ -229,9 +229,9 @@ function Base.show(io::IO, categorical_columns::Vector{CategoricalColumn})
         )
         pretty_table(
             io,
-            categorical_table,
-            categorical_header;
-            backend = :text,
+            categorical_table;
+            header = categorical_header,
+            backend = Val(:text),
             formatters = categorical_formatters,
         )
     end
@@ -248,9 +248,9 @@ function Base.show(io::IO, datetime_columns::Vector{DateTimeColumn})
         println(io, "$(n_datetime_columns) datetime column$(plural(n_datetime_columns))")
         pretty_table(
             io,
-            datetime_table,
-            datetime_header;
-            backend = :text,
+            datetime_table;
+            header = datetime_header,
+            backend = Val(:text),
             formatters = datetime_formatters,
         )
     end
