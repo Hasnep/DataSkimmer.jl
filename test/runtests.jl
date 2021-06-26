@@ -4,9 +4,9 @@ import RDatasets
 using DataFrames
 using DataSkimmer
 using Dates
-using StructArrays: StructArray
+using StructArrays:StructArray
 using Test
-using TimeSeries: TimeArray
+using TimeSeries:TimeArray
 
 iris_dataframe = RDatasets.dataset("datasets", "iris")
 
@@ -43,20 +43,24 @@ datasets = Dict(
             @test length(output) == n_bars
         end
     end
-    @testset "Test dataset '$ds_name'" for (ds_name, data) in datasets
-        @testset "Test summary functions" begin
-            @testset "Test count_rows($ds_name) counts the number of rows" begin
-                @test DataSkimmer.count_rows(data) isa Integer
+
+    @testset "Test on example datasets" begin
+        @testset "Test dataset '$ds_name'" for (ds_name, data) in datasets
+            @testset "Test summary functions" begin
+                @testset "Test count_rows($ds_name) counts the number of rows" begin
+                    @test DataSkimmer.count_rows(data) isa Integer
+                end
+                @testset "Test count_columns($ds_name) counts the number of columns" begin
+                    @test DataSkimmer.count_columns(data) isa Integer
+                end
             end
-            @testset "Test count_columns($ds_name) counts the number of columns" begin
-                @test DataSkimmer.count_columns(data) isa Integer
+            @testset "Test skim($ds_name) produces output" begin
+                @test skim(data) isa DataSkimmer.Skimmed
+                @test string(skim(data)) isa String
             end
-        end
-        @testset "Test skim($ds_name) produces output" begin
-            @test skim(data) isa DataSkimmer.Skimmed
-            @test string(skim(data)) isa String
         end
     end
+
     @testset "Test skim() raises an error for invalid input" begin
         @test_throws ArgumentError skim("abc")
     end
