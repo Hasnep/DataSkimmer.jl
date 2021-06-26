@@ -4,9 +4,9 @@ import RDatasets
 using DataFrames
 using DataSkimmer
 using Dates
-using StructArrays:StructArray
+using StructArrays: StructArray
 using Test
-using TimeSeries:TimeArray
+using TimeSeries: TimeArray
 
 iris_dataframe = RDatasets.dataset("datasets", "iris")
 
@@ -41,6 +41,29 @@ datasets = Dict(
             output = DataSkimmer.unicode_histogram(input, n_bars)
             @test output isa String
             @test length(output) == n_bars
+        end
+    end
+
+    @testset "Test column type helper functions" begin
+        column_types = Dict(
+            Dates.Date => :datetime,
+            Dates.DateTime => :datetime,
+            Union{Dates.Date, Missing} => :datetime,
+            Union{Dates.DateTime, Missing} => :datetime,
+            Real => :numeric,
+            Union{Real, Missing} => :numeric,
+            String => :categorical,
+            Union{String, Missing} => :categorical,
+            Symbol => :categorical,
+            Union{Symbol, Missing} => :categorical,
+        )
+        @testset "Test $column_type is categorised as $type_name" for (
+            column_type,
+            type_name,
+        ) in column_types
+            @test DataSkimmer.is_datetime(column_type) == (type_name == :datetime)
+            @test DataSkimmer.is_numeric(column_type) == (type_name == :numeric)
+            @test DataSkimmer.is_categorical(column_type) == (type_name == :categorical)
         end
     end
 
