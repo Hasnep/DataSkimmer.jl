@@ -26,7 +26,7 @@ function count_columns(data)::Integer
     end
 end
 
-is_datetime(x)::Bool = x == Dates.Date || x == Dates.DateTime
+is_datetime(x)::Bool = x <: Union{Dates.Date, Dates.DateTime, Missing}
 is_numeric(x)::Bool = x <: Union{Real, Missing}
 is_categorical(x)::Bool = !is_numeric(x) && !is_datetime(x)
 
