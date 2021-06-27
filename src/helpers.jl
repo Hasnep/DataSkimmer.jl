@@ -26,9 +26,10 @@ function count_columns(data)::Integer
     end
 end
 
-is_datetime(x)::Bool = x <: Union{Dates.Date, Dates.DateTime, Missing}
-is_numeric(x)::Bool = x <: Union{Real, Missing}
-is_categorical(x)::Bool = !is_numeric(x) && !is_datetime(x)
+is_allmissing(x)::Bool = x <: Missing 
+is_datetime(x)::Bool = !is_allmissing(x) && x <: Union{Dates.Date, Dates.DateTime, Missing}
+is_numeric(x)::Bool = !is_allmissing(x) &&  x <: Union{Real, Missing}
+is_categorical(x)::Bool = !is_allmissing(x) && !is_numeric(x) && !is_datetime(x)
 
 function formatter_numeric(data, columns_to_format; n_decimal_places::Integer)
     format_string = "%.$(n_decimal_places)f"
