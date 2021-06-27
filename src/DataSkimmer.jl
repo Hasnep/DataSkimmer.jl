@@ -19,6 +19,7 @@ struct Summary
     n_numeric::Int64
     n_categorical::Int64
     n_datetime::Int64
+    n_allmissing::Int64
 end
 
 struct NumericColumn
@@ -92,11 +93,29 @@ struct DateTimeColumn
     end
 end
 
+struct AllMissingColumn
+    name::Symbol
+    type::Type
+    n_missing::Int64
+    completion_rate::Float64
+
+    function AllMissingColumn(data, column_name)
+        n_missing = count(ismissing, Tables.getcolumn(data, column_name))
+        return new(
+            column_name,
+            Tables.columntype(data, column_name),
+            n_missing,
+            1 - (n_missing / count_rows(data)),
+        )
+    end
+end
+
 struct Skimmed
     summary::Summary
     numeric_columns::Vector{NumericColumn}
     categorical_columns::Vector{CategoricalColumn}
     datetime_columns::Vector{DateTimeColumn}
+    allmissing_columns::Vector{AllMissingColumn}
 end
 
 """
@@ -147,6 +166,14 @@ function skim(input_data)::Skimmed
         map(column_name -> DateTimeColumn(data, column_name), datetime_column_names),
     )
 
+    # AllMissing columns
+    allmissing_column_names = filter(
+        column_name -> is_allmissing(Tables.columntype(data, column_name)),
+        column_names,
+    )
+    allmissing_columns = collect(
+        map(column_name -> AllMissingColumn(data, column_name), allmissing_column_names),
+    )
     # Summary
     summary = Summary(
         typeof(data),
@@ -155,9 +182,10 @@ function skim(input_data)::Skimmed
         length(numeric_columns),
         length(categorical_columns),
         length(datetime_columns),
+        length(allmissing_columns)
     )
 
-    return Skimmed(summary, numeric_columns, categorical_columns, datetime_columns)
+    return Skimmed(summary, numeric_columns, categorical_columns, datetime_columns, allmissing_columns)
 end
 
 function Base.show(io::IO, summary::Summary)
@@ -168,6 +196,7 @@ function Base.show(io::IO, summary::Summary)
         "N. numeric cols" summary.n_numeric
         "N. categorical cols" summary.n_categorical
         "N. datetime cols" summary.n_datetime
+        "N. allmissing cols" summary.n_allmissing
     ]
     pretty_table(
         io,
@@ -257,11 +286,34 @@ function Base.show(io::IO, datetime_columns::Vector{DateTimeColumn})
     return
 end
 
+function Base.show(io::IO, allmissing_columns::Vector{AllMissingColumn})
+    n_allmissing_columns = length(allmissing_columns)
+    if n_allmissing_columns > 0
+        allmissing_table = StructArray(allmissing_columns)
+        allmissing_header = ["Name", "Type", "Missings", "Complete"]
+        allmissing_formatters =
+            formatter_percent(allmissing_table, [:completion_rate]; n_decimal_places = 1)
+        println(
+            io,
+            "$(n_allmissing_columns) allmissing column$(plural(n_allmissing_columns))",
+        )
+        pretty_table(
+            io,
+            allmissing_table;
+            header = allmissing_header,
+            backend = Val(:text),
+            formatters = allmissing_formatters,
+        )
+    end
+    return
+end
+
 function Base.show(io::IO, skimmed::Skimmed)
     println(io, skimmed.summary)
     println(io, skimmed.numeric_columns)
     println(io, skimmed.categorical_columns)
     println(io, skimmed.datetime_columns)
+    println(io, skimmed.allmissing_columns)
     return
 end
 
