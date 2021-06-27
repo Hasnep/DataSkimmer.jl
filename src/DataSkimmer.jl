@@ -73,8 +73,8 @@ struct DateTimeColumn
     type::Type
     n_missing::Int64
     completion_rate::Float64
-    minimum::Union{Dates.Date, Dates.DateTime}
-    maximum::Union{Dates.Date, Dates.DateTime}
+    minimum::Union{Dates.Date, Dates.DateTime, Missing}
+    maximum::Union{Dates.Date, Dates.DateTime, Missing}
     histogram::String
 
     function DateTimeColumn(data, column_name)
