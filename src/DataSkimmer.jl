@@ -98,10 +98,7 @@ struct AllMissingColumn
     type::Type
 
     function AllMissingColumn(data, column_name)
-        return new(
-            column_name,
-            Tables.columntype(data, column_name),
-        )
+        return new(column_name, Tables.columntype(data, column_name))
     end
 end
 
@@ -177,10 +174,16 @@ function skim(input_data)::Skimmed
         length(numeric_columns),
         length(categorical_columns),
         length(datetime_columns),
-        length(allmissing_columns)
+        length(allmissing_columns),
     )
 
-    return Skimmed(summary, numeric_columns, categorical_columns, datetime_columns, allmissing_columns)
+    return Skimmed(
+        summary,
+        numeric_columns,
+        categorical_columns,
+        datetime_columns,
+        allmissing_columns,
+    )
 end
 
 function Base.show(io::IO, summary::Summary)
@@ -290,12 +293,7 @@ function Base.show(io::IO, allmissing_columns::Vector{AllMissingColumn})
             io,
             "$(n_allmissing_columns) allmissing column$(plural(n_allmissing_columns))",
         )
-        pretty_table(
-            io,
-            allmissing_table;
-            header = allmissing_header,
-            backend = Val(:text),
-        )
+        pretty_table(io, allmissing_table; header = allmissing_header, backend = Val(:text))
     end
     return
 end
