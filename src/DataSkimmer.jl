@@ -96,16 +96,11 @@ end
 struct AllMissingColumn
     name::Symbol
     type::Type
-    n_missing::Int64
-    completion_rate::Float64
 
     function AllMissingColumn(data, column_name)
-        n_missing = count(ismissing, Tables.getcolumn(data, column_name))
         return new(
             column_name,
             Tables.columntype(data, column_name),
-            n_missing,
-            1 - (n_missing / count_rows(data)),
         )
     end
 end
@@ -290,9 +285,7 @@ function Base.show(io::IO, allmissing_columns::Vector{AllMissingColumn})
     n_allmissing_columns = length(allmissing_columns)
     if n_allmissing_columns > 0
         allmissing_table = StructArray(allmissing_columns)
-        allmissing_header = ["Name", "Type", "Missings", "Complete"]
-        allmissing_formatters =
-            formatter_percent(allmissing_table, [:completion_rate]; n_decimal_places = 1)
+        allmissing_header = ["Name", "Type"]
         println(
             io,
             "$(n_allmissing_columns) allmissing column$(plural(n_allmissing_columns))",
@@ -302,7 +295,6 @@ function Base.show(io::IO, allmissing_columns::Vector{AllMissingColumn})
             allmissing_table;
             header = allmissing_header,
             backend = Val(:text),
-            formatters = allmissing_formatters,
         )
     end
     return
