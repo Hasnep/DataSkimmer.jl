@@ -57,14 +57,17 @@ struct CategoricalColumn
     type::Type
     n_missing::Int64
     completion_rate::Float64
+    n_unique::Int64
 
     function CategoricalColumn(data, column_name)
         n_missing = count(ismissing, Tables.getcolumn(data, column_name))
+        n_unique = length(unique(skipmissing(Tables.getcolumn(data, column_name))))
         return new(
             column_name,
             Tables.columntype(data, column_name),
             n_missing,
             1 - (n_missing / count_rows(data)),
+             n_unique,
         )
     end
 end
@@ -247,7 +250,7 @@ function Base.show(io::IO, categorical_columns::Vector{CategoricalColumn})
     n_categorical_columns = length(categorical_columns)
     if n_categorical_columns > 0
         categorical_table = StructArray(categorical_columns)
-        categorical_header = ["Name", "Type", "Missings", "Complete"]
+        categorical_header = ["Name", "Type", "Missings", "Complete", "Unique"]
         categorical_formatters =
             formatter_percent(categorical_table, [:completion_rate]; n_decimal_places = 1)
         println(
