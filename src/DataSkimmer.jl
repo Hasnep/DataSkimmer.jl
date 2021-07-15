@@ -67,7 +67,7 @@ struct CategoricalColumn
             Tables.columntype(data, column_name),
             n_missing,
             1 - (n_missing / count_rows(data)),
-             n_unique,
+            n_unique,
         )
     end
 end
