@@ -17,6 +17,14 @@ economics_dataframe = RDatasets.dataset("ggplot2", "economics")
 # Convert the economics dataset to a TimeArray
 economics_timearray = TimeArray(economics_dataframe, timestamp = :Date)
 
+# A dataset with different levels of missingness
+mostly_missing = DataFrame(
+    a = rand(1:5, 1000),
+    b = rand([1; missing], 1000),
+    c = rand([1:4; missing], 1000),
+    d = repeat([missing], 1000),
+)
+
 datasets = Dict(
     "vector_of_named_tuples" => vector_of_named_tuples,
     "named_tuple_of_vectors" => Tables.columntable(vector_of_named_tuples),
@@ -27,4 +35,5 @@ datasets = Dict(
     "economics_timearray" => economics_timearray,
     "loomis_dataframe" => RDatasets.dataset("COUNT", "loomis"),
     "empty_dataframe" => DataFrame(x = [], y = Int64[], z = String[]),
+    "mostly_missing" => mostly_missing,
 )
