@@ -83,8 +83,8 @@ struct DateTimeColumn
 
     function DateTimeColumn(data, column_name)
         column = Tables.getcolumn(data, column_name)
-        column = skipmissing(column)
         n_missing = count(ismissing, column)
+        column = skipmissing(column)
         return new(
             column_name,
             Tables.columntype(data, column_name),
