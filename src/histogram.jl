@@ -17,15 +17,25 @@ end
 Construct a histogram made of a sequence of unicode bar characters.
 """
 function unicode_histogram(x, n_bins::Integer)::String
+    # Special case for time data
+    if eltype(x) == Dates.Time
+        return unicode_histogram(getfield.(x .- Dates.Time(0), :value), n_bins)
+    end
+
+    # Special case for when all the datapoints are missing
     n_nonmissing_datapoints = count(!ismissing, x)
     if n_nonmissing_datapoints == 0
         return repeat(" ", n_bins)
     end
+
     x = skipmissing(x)
     min_value, max_value = extrema(x)
+
+    # Special case for when all of the non-missing values are the same
     if max_value == min_value
         return repeat(" ", n_bins)
     end
+
     bin_edges = range(min_value, max_value; length = n_bins + 1)
     weights = [
         if index == 1
