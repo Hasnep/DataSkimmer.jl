@@ -1,8 +1,8 @@
 # The most basic Tables.jl table is a vector of named tuples
 vector_of_named_tuples = [
-    (a = 1, b = "one", c = Dates.Date(2021, 1, 1)),
-    (a = 2, b = "two", c = Dates.Date(2021, 1, 2)),
-    (a = 3, b = "three", c = Dates.Date(2021, 1, 3)),
+    (a = 1, b = "one", c = Date(2021, 1, 1), d = Time(1, 2, 3)),
+    (a = 2, b = "two", c = Date(2021, 1, 2), d = Time(2, 3, 4)),
+    (a = 3, b = "three", c = Date(2021, 1, 3), d = Time(3, 4, 5)),
 ]
 
 # The famous iris dataset to test DataFrames.jl dataframes
