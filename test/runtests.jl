@@ -24,6 +24,24 @@ include("datasets.jl")
             @test output isa String
             @test length(output) == n_bars
         end
+        @testset "Test unicode_histogram works with dates" begin
+            n_bars = 5
+            output = DataSkimmer.unicode_histogram(
+                range(Date(2000, 1, 1), Date(2048, 1, 1); length = 10),
+                n_bars,
+            )
+            @test output isa String
+            @test length(output) == n_bars
+        end
+        @testset "Test unicode_histogram works with times" begin
+            n_bars = 5
+            output = DataSkimmer.unicode_histogram(
+                range(Time(0, 0, 0), Time(23, 59, 59); step = Minute(7)),
+                n_bars,
+            )
+            @test output isa String
+            @test length(output) == n_bars
+        end
     end
 
     @testset "Test column type helper functions" begin
