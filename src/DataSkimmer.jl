@@ -207,6 +207,7 @@ function Base.show(io::IO, summary::Summary)
         backend = Val(:text),
         highlighters = (hl_col(1, Crayon(bold = true))),
     )
+    print(io, "\n")
     return
 end
 
@@ -303,11 +304,11 @@ function Base.show(io::IO, allmissing_columns::Vector{AllMissingColumn})
 end
 
 function Base.show(io::IO, skimmed::Skimmed)
-    println(io, skimmed.summary)
-    println(io, skimmed.numeric_columns)
-    println(io, skimmed.categorical_columns)
-    println(io, skimmed.datetime_columns)
-    println(io, skimmed.allmissing_columns)
+    print(io, skimmed.summary)
+    print(io, skimmed.numeric_columns)
+    print(io, skimmed.categorical_columns)
+    print(io, skimmed.datetime_columns)
+    print(io, skimmed.allmissing_columns)
     return
 end
 
