@@ -12,7 +12,8 @@ jobs:
       fail-fast: true
       matrix:
         julia-version:
-          - "1.6"
+          - "1.6" # LTS release
+          - "1.7" # Stable release
         julia-arch:
           - x64
         os:
