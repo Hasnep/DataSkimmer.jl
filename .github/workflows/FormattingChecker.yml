@@ -1,9 +1,6 @@
 name: FormattingChecker
 
 on:
-  push:
-    paths:
-      - "**.jl"
   pull_request:
     paths:
       - "**.jl"
