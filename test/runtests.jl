@@ -1,3 +1,4 @@
+import Aqua
 import CSV
 import Random
 import RDatasets
@@ -11,6 +12,9 @@ using TimeSeries: TimeArray
 include("datasets.jl")
 
 @testset "Test DataSkimmer.jl" begin
+    @testset "Run Aqua.jl" begin
+        Aqua.test_all(DataSkimmer)
+    end
     @testset "Test unicode_histogram" begin
         @testset "Test unicode_histogram draws $n_bars bar(s)" for n_bars in [1, 2, 5, 10]
             output = DataSkimmer.unicode_histogram(-100:100, n_bars)
