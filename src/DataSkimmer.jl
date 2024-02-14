@@ -203,7 +203,7 @@ function Base.show(io::IO, summary::Summary)
     pretty_table(
         io,
         summary_table;
-        noheader = true,
+        show_header = false,
         backend = Val(:text),
         highlighters = (hl_col(1, Crayon(bold = true))),
     )
